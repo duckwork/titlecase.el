@@ -96,6 +96,16 @@ values, but There Be Monsters.
 Finally, there's the titlecase-style ~sentence~ if you want some
 long-asked-for sanity in your titles.
 
+* License
+
+Everyone is permitted to do whatever they like with this software
+without limitation.  This software comes without any warranty
+whatsoever, but with two pieces of advice:
+
+- Be kind to yourself.
+- Make good choices.
+
+
 * Contributing!
 
 /Please/ contribute!  This is a herculean effort, so feel free to open issues,

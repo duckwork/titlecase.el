@@ -1,9 +1,18 @@
 ;;; titlecase.el --- Title-case phrases -*- lexical-binding: t; -*-
 
 ;; Author: Case Duckworth <acdw@acdw.net>
+;; Maintainer: Case Duckworth <acdw@acdw.net>
 ;; Version: 0.1.0
 ;; URL: https://github.com/duckwork/titlecase.el
 ;; Package-Requires: ((emacs "25.1"))
+
+;;; License:
+
+;; Everyone is permitted to do whatever they like with this software
+;; without limitation.  This software comes without any warranty
+;; whatsoever, but with two pieces of advice:
+;; - Be kind to yourself.
+;; - Make good choices.
 
 ;;; Commentary:
 
