@@ -236,7 +236,7 @@ Include: articles, coordinating conjunctions, prepositions, and
   (save-excursion
     (goto-char begin)
     ;; If the region is in ALL-CAPS, normalize it first
-    (unless (re-search-forward "[a-z]" end :noerror)
+    (unless (re-search-forward "[:lower:]" end :noerror)
       (downcase-region begin end))
     (goto-char begin)                   ; gotta go back to the beginning
     (let (;; Constants during this function's runtime
@@ -252,7 +252,7 @@ Include: articles, coordinating conjunctions, prepositions, and
         (setq this-word (current-word))
         (cond
          ;; Skip ALL-CAPS words
-         ((string-match "^[A-Z]+$" this-word) (forward-word 1))
+         ((string-match "^[:upper:]+$" this-word) (forward-word 1))
          ;; Force capitalization if `force-capitalize' is t
          (force-capitalize (progn (setq force-capitalize nil)
                                   (capitalize-word 1)))
