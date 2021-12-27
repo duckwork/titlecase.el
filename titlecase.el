@@ -1,10 +1,13 @@
-;;; titlecase.el --- title-case phrases -*- lexical-binding: t; -*-
+;;; titlecase.el --- Title-case phrases -*- lexical-binding: t; -*-
 
 ;; Author: Case Duckworth <acdw@acdw.net>
+;; Version: 0.1.0
+;; URL: https://github.com/duckwork/titlecase.el
+;; Package-Requires: ((emacs "25.1"))
 
 ;;; Commentary:
 
-;; adapted from https://hungyi.net/posts/programmers-way-to-title-case/ and
+;; Adapted from https://hungyi.net/posts/programmers-way-to-title-case/ and
 ;; https://github.com/novoid/title-capitalization.el, and with rules from
 ;; https://capitalizemytitle.com/#capitalizationrules
 
@@ -210,7 +213,7 @@ Include: articles, coordinating conjunctions, prepositions, and
                  (const :tag "Wikipedia Style" wikipedia)
                  (const :tag "Sentence style" sentence)))
 
-(defcustom titlecase-default-case-function 'capitalize-word
+(defcustom titlecase-default-case-function #'capitalize-word
   "What to do to a word when a style doesn't specify what to do."
   :type 'function)
 
