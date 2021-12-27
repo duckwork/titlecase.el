@@ -234,52 +234,53 @@ Include: articles, coordinating conjunctions, prepositions, and
   "Titlecase the region of English text from BEGIN to END, using STYLE."
   (interactive "*r")
   (save-excursion
-    (goto-char begin)
-    ;; If the region is in ALL-CAPS, normalize it first
-    (unless (re-search-forward "[a-z]" end :noerror)
-      (downcase-region begin end))
-    (goto-char begin)                   ; gotta go back to the beginning
-    (let (;; Constants during this function's runtime
-          (case-fold-search nil)
-          (downcase-word-list (symbol-value
-                               (intern (format "titlecase-lowercase-%s"
-                                               style))))
-          ;; State variables
-          (this-word (current-word))
-          (force-capitalize t))
-      ;; And loop over the rest
-      (while (< (point) end)
-        (setq this-word (current-word))
-        (cond
-         ;; Skip ALL-CAPS words
-         ((string-match "^[A-Z]+$" this-word) (forward-word 1))
-         ;; Force capitalization if `force-capitalize' is t
-         (force-capitalize (progn (setq force-capitalize nil)
-                                  (capitalize-word 1)))
-         ;; Special rules for different styles
-         ((and (eq style 'ap)
-               (> (length this-word) 3))
-          (capitalize-word 1))
-         ((eq style 'sentence)
-          ;; Sentence style just capitalizes the first word.  Since we can't be
-          ;; sure how the user has already capitalized anything, we just skip
-          ;; the current word.
-          (forward-word 1))
-         ;; Downcase words that should be
-         ((member (downcase this-word) downcase-word-list)
-          (downcase-word 1))
-         ;; Otherwise, do the default function on the word
-         (t (funcall titlecase-default-case-function 1)))
-        ;; If the word ends with a :, ., ?, newline, or carriage-return, force
-        ;; the next word to be capitalized.
-        (when (looking-at titlecase-force-cap-after-punc)
-          (setq force-capitalize t))
-        (skip-syntax-forward "^w" end))
-      ;; Capitalize the last word, only in some styles
-      (when (memq style '(chicago ap bluebook ama nyt wikipedia))
-        (backward-word 1)
-        (when (and (>= (point) begin))
-          (capitalize-word 1))))))
+    (save-match-data
+      (goto-char begin)
+      ;; If the region is in ALL-CAPS, normalize it first
+      (unless (re-search-forward "[a-z]" end :noerror)
+        (downcase-region begin end))
+      (goto-char begin)                   ; gotta go back to the beginning
+      (let (;; Constants during this function's runtime
+            (case-fold-search nil)
+            (downcase-word-list (symbol-value
+                                 (intern (format "titlecase-lowercase-%s"
+                                                 style))))
+            ;; State variables
+            (this-word (current-word))
+            (force-capitalize t))
+        ;; And loop over the rest
+        (while (< (point) end)
+          (setq this-word (current-word))
+          (cond
+           ;; Skip ALL-CAPS words
+           ((string-match "^[A-Z]+$" this-word) (forward-word 1))
+           ;; Force capitalization if `force-capitalize' is t
+           (force-capitalize (progn (setq force-capitalize nil)
+                                    (capitalize-word 1)))
+           ;; Special rules for different styles
+           ((and (eq style 'ap)
+                 (> (length this-word) 3))
+            (capitalize-word 1))
+           ((eq style 'sentence)
+            ;; Sentence style just capitalizes the first word.  Since we can't
+            ;; be sure how the user has already capitalized anything, we just
+            ;; skip the current word.
+            (forward-word 1))
+           ;; Downcase words that should be
+           ((member (downcase this-word) downcase-word-list)
+            (downcase-word 1))
+           ;; Otherwise, do the default function on the word
+           (t (funcall titlecase-default-case-function 1)))
+          ;; If the word ends with a :, ., ?, newline, or carriage-return,
+          ;; force the next word to be capitalized.
+          (when (looking-at titlecase-force-cap-after-punc)
+            (setq force-capitalize t))
+          (skip-syntax-forward "^w" end))
+        ;; Capitalize the last word, only in some styles
+        (when (memq style '(chicago ap bluebook ama nyt wikipedia))
+          (backward-word 1)
+          (when (and (>= (point) begin))
+            (capitalize-word 1)))))))
 
 ;;;###autoload
 (defun titlecase-region (begin end)
