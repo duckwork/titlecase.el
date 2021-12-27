@@ -95,3 +95,8 @@ values, but There Be Monsters.
 
 Finally, there's the titlecase-style ~sentence~ if you want some
 long-asked-for sanity in your titles.
+
+* Contributing!
+
+/Please/ contribute!  This is a herculean effort, so feel free to open issues,
+pull requests, whatever.  I'm excited to hear from you!
