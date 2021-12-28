@@ -236,10 +236,6 @@ Include: articles, coordinating conjunctions, prepositions, and
   (save-excursion
     (save-match-data
       (goto-char begin)
-      ;; If the region is in ALL-CAPS, normalize it first
-      (unless (re-search-forward "[[:lower:]]" end :noerror)
-        (downcase-region begin end))
-      (goto-char begin)                   ; gotta go back to the beginning
       (let (;; Constants during this function's runtime
             (case-fold-search nil)
             (downcase-word-list (symbol-value
@@ -248,6 +244,10 @@ Include: articles, coordinating conjunctions, prepositions, and
             ;; State variables
             (this-word (current-word))
             (force-capitalize t))
+        ;; If the region is in ALL-CAPS, normalize it first
+        (unless (re-search-forward "[[:lower:]]" end :noerror)
+          (downcase-region begin end))
+        (goto-char begin)                   ; gotta go back to the beginning
         ;; And loop over the rest
         (while (< (point) end)
           (setq this-word (current-word))
