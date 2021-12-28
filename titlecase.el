@@ -2,7 +2,7 @@
 
 ;; Author: Case Duckworth <acdw@acdw.net>
 ;; Maintainer: Case Duckworth <acdw@acdw.net>
-;; Version: 0.1.0
+;; Version: 0.2.0
 ;; URL: https://github.com/duckwork/titlecase.el
 ;; Package-Requires: ((emacs "25.1"))
 
@@ -16,16 +16,25 @@
 
 ;;; Commentary:
 
-;; Adapted from https://hungyi.net/posts/programmers-way-to-title-case/ and
-;; https://github.com/novoid/title-capitalization.el, and with rules from
-;; https://capitalizemytitle.com/#capitalizationrules
-
 ;; It turns out, capitalizing titles is Hard.  This library only does it in
 ;; English, and even then, it's pretty jankily put-together.  It's due, mostly,
 ;; to the fact that many words can mean many different things, depending, and I
 ;; don't want to put a whole dictionary in this package just to make
 ;; capitalizing headings a little easier.  I'll expound more on this in the USE
 ;; section, below.
+
+;; Adapted from https://hungyi.net/posts/programmers-way-to-title-case/ and
+;; https://github.com/novoid/title-capitalization.el, and with rules from
+;; https://capitalizemytitle.com/#capitalizationrules
+
+;; More prior art:
+
+;; - https://emacs.stackexchange.com/questions/66361/#66362
+
+;; INSTALLATION:
+
+;; Make sure both titlecase.el and titlecase-data.el are in your `load-path',
+;; and `require' as per usual.
 
 ;; USE:
 
@@ -115,46 +124,12 @@
 ;;; Code:
 
 (require 'seq)
+(require 'titlecase-data)
 
 (defgroup titlecase nil
   "Customizations for titlecasing phrases."
   :prefix "titlecase-"
   :group 'text)
-
-;;; Lists of words /never/ to capitalize
-
-(defvar titlecase-prepositions
-  ;; This was pulled from Wikipedia, and so is somewhat weird.
-  ;; https://en.wikipedia.org/wiki/List_of_English_prepositions
-  '("'thout" "'tween" "aboard" "about" "above"
-    "abreast" "absent" "abt."  "across" "after" "against" "ago" "aloft" "along"
-    "alongside" "amid" "amidst" "among" "amongst" "anti" "apart" "apropos"
-    "around" "as" "aside" "aslant" "astride" "at" "atop" "away" "before"
-    "behind" "below" "beneath" "beside" "besides" "between" "beyond" "but" "by"
-    "c." "ca." "circa" "come" "concerning" "contra" "counting" "cum" "despite"
-    "down" "during" "effective" "ere" "except" "excepting" "excluding" "failing"
-    "following" "for" "from" "hence" "in" "including" "inside" "into" "less"
-    "like" "mid" "midst" "minus" "mod" "modulo" "near" "nearer" "nearest"
-    "neath" "next" "notwithstanding" "o'" "o'er" "of" "off" "on"
-    "onto" "ontop" "opposite" "out" "outside" "over" "pace" "past" "pending"
-    "per" "plus" "post" "pre" "pro" "qua" "re" "regarding" "respecting" "round"
-    "sans" "save" "saving" "short" "since" "sub" "t'" "than" "through"
-    "throughout" "thru" "thruout" "till" "times" "to" "toward" "towards" "under"
-    "underneath" "unlike" "until" "unto" "up" "upon" "v." "versus" "via"
-    "vis-à-vis" "vs." "w."  "w/" "w/i" "w/o" "wanting" "with" "within"
-    "without")
-  "List of prepositions in English.
-This list is, by necessity, incomplete, even though prepositions
-are a closed lexical group in the English language.  This list
-was pulled and culled from
-https://en.wikipedia.org/wiki/List_of_English_prepositions.")
-
-(defvar titlecase-articles '("a" "an" "the")
-  "List of articles in English.")
-
-(defvar titlecase-coordinating-conjunctions '("for" "and" "nor" "but" "or"
-                                              "yet" "so")
-  "List of coordinating conjunctions in English.")
 
 (defvar titlecase-lowercase-chicago (append titlecase-articles
                                             titlecase-prepositions
@@ -247,7 +222,7 @@ Include: articles, coordinating conjunctions, prepositions, and
         ;; If the region is in ALL-CAPS, normalize it first
         (unless (re-search-forward "[[:lower:]]" end :noerror)
           (downcase-region begin end))
-        (goto-char begin)                   ; gotta go back to the beginning
+        (goto-char begin)                   ; gotta go back to the beginning1
         ;; And loop over the rest
         (while (< (point) end)
           (setq this-word (current-word))

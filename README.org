@@ -9,6 +9,16 @@ don't want to put a whole dictionary in this package just to make
 capitalizing headings a little easier.  I'll expound more on this in the USE
 section, below.
 
+* Installation
+
+Make sure both titlecase.el and titlecase-data.el are in your ~load-path~,
+and =require= as per usual.  If you use a package manager like =package.el= or
+=straight.el=, that should be done for you.
+
+Note that you will need a package manager that can pull from arbitrary git
+repositories at the moment (like =straight.el=), since this package is not
+currently in any elpa-style repositories.
+
 * Use
 
 The only setting you really should need to set is =titlecase-style=, which
