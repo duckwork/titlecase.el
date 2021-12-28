@@ -131,60 +131,6 @@
   :prefix "titlecase-"
   :group 'text)
 
-(defvar titlecase-lowercase-chicago (append titlecase-articles
-                                            titlecase-prepositions
-                                            titlecase-coordinating-conjunctions)
-  "Words to lowercase in Chicago Style.
-Include: articles, coordinating conjunctions, prepositions, and
-\"to\" in an infinitive (though that's caught as a preposition).")
-
-(defvar titlecase-lowercase-apa (append titlecase-articles
-                                        (seq-filter (lambda (p)
-                                                      (< (length p) 4))
-                                                    titlecase-prepositions))
-  "Words to lowercase in APA Style.")
-
-(defvar titlecase-lowercase-mla (append titlecase-articles
-                                        titlecase-prepositions
-                                        titlecase-coordinating-conjunctions)
-  "Words to lowercase in MLA Style.")
-
-(defvar titlecase-lowercase-ap (append titlecase-articles
-                                       (seq-filter (lambda (p)
-                                                     (< (length p) 4))
-                                                   titlecase-prepositions)
-                                       (seq-filter
-                                        (lambda (p)
-                                          (< (length p) 4))
-                                        titlecase-coordinating-conjunctions))
-  "Words to lowercase in AP Style.")
-
-(defvar titlecase-lowercase-bluebook (append titlecase-articles
-                                             titlecase-coordinating-conjunctions
-                                             (seq-filter
-                                              (lambda (p)
-                                                (< (length p) 4))
-                                              titlecase-prepositions))
-  "Words to lowercase in Bluebook Style.")
-
-(defvar titlecase-lowercase-ama (append titlecase-articles
-                                        titlecase-coordinating-conjunctions
-                                        (seq-filter (lambda (p)
-                                                      (< (length p) 4))
-                                                    titlecase-prepositions))
-  "Words to lowercase in AMA Style.")
-
-(defvar titlecase-lowercase-nyt (append titlecase-articles
-                                        titlecase-prepositions
-                                        titlecase-coordinating-conjunctions)
-  "Words to lowercase in New York Times Style.")
-
-(defvar titlecase-lowercase-wikipedia
-  (append titlecase-articles
-          (seq-filter (lambda (p) (< (length p) 5)) titlecase-prepositions)
-          titlecase-coordinating-conjunctions)
-  "Words to lowercase in Wikipedia Style.")
-
 (defcustom titlecase-style 'chicago
   "Which style to use when titlecasing."
   :type '(choice (const :tag "Chicago Style" chicago)
@@ -222,20 +168,46 @@ Include: articles, coordinating conjunctions, prepositions, and
         ;; If the region is in ALL-CAPS, normalize it first
         (unless (re-search-forward "[[:lower:]]" end :noerror)
           (downcase-region begin end))
-        (goto-char begin)                   ; gotta go back to the beginning1
+        (goto-char begin)                   ; gotta go back to the beginning
         ;; And loop over the rest
         (while (< (point) end)
           (setq this-word (current-word))
           (cond
            ;; Skip ALL-CAPS words
-           ((string-match "^[[:upper:]]+$" this-word) (forward-word 1))
+           ((string-match "^[[:upper:]]+$" this-word)
+            (forward-word 1))
+           ;; Phrasal verbs!
+           ((and (memq style titlecase-styles-capitalize-phrasal-verbs)
+                 (member (downcase this-word)
+                         (mapcar #'car titlecase-phrasal-verbs)))
+            ;; We need to do a little state machine thingy here
+            (let ((next-words (assoc this-word titlecase-phrasal-verbs))
+                  (bail-pt (point)))
+              ;; Take care of the first word --- this is inelegant.
+              (capitalize-word 1)
+              (skip-syntax-forward "^w" end)
+              (setq this-word (current-word))
+              ;; Loop through the rest
+              (while (member (downcase this-word)
+                             (mapcar #'car-safe next-words))
+                (capitalize-word 1)
+                (skip-syntax-forward "^w" end)
+                (setq this-word (current-word)
+                      next-words (mapcar #'cdr-safe next-words)))
+              (unless (seq-some 'null next-words)
+                ;; If it's not a phrasal verb, bail --- but still capitalize the
+                ;; first word!
+                (downcase-region bail-pt (point))
+                (goto-char bail-pt)
+                (capitalize-word 1))))
            ;; Force capitalization if `force-capitalize' is t
-           (force-capitalize (progn (setq force-capitalize nil)
-                                    (capitalize-word 1)))
-           ;; Special rules for different styles
-           ((and (eq style 'ap)
-                 (> (length this-word) 3))
+           (force-capitalize
             (capitalize-word 1))
+           ;; AP capitalizes /all/ words longer than 3 letters
+           ((and (memq style titlecase-styles-capitalize-non-short-words)
+                 (> (length this-word) titlecase-short-word-length))
+            (capitalize-word 1))
+           ;; Skip the next word if ...
            ((or
              ;; Sentence style just capitalizes the first word.  Since we can't
              ;; be sure how the user has already capitalized anything, we just
@@ -255,11 +227,10 @@ Include: articles, coordinating conjunctions, prepositions, and
            (t (funcall titlecase-default-case-function 1)))
           ;; If the word ends with a :, ., ?, newline, or carriage-return,
           ;; force the next word to be capitalized.
-          (when (looking-at titlecase-force-cap-after-punc)
-            (setq force-capitalize t))
+          (setq force-capitalize (looking-at titlecase-force-cap-after-punc))
           (skip-syntax-forward "^w" end))
         ;; Capitalize the last word, only in some styles
-        (when (memq style '(chicago ap bluebook ama nyt wikipedia))
+        (when (memq style titlecase-styles-capitalize-last-word)
           (backward-word 1)
           (when (and (>= (point) begin))
             (capitalize-word 1)))))))
