@@ -261,10 +261,17 @@ Include: articles, coordinating conjunctions, prepositions, and
            ((and (eq style 'ap)
                  (> (length this-word) 3))
             (capitalize-word 1))
-           ((eq style 'sentence)
-            ;; Sentence style just capitalizes the first word.  Since we can't
-            ;; be sure how the user has already capitalized anything, we just
-            ;; skip the current word.
+           ((or
+             ;; Sentence style just capitalizes the first word.  Since we can't
+             ;; be sure how the user has already capitalized anything, we just
+             ;; skip the current word.
+             (eq style 'sentence)
+             ;; None of the styles require a capital letter after an
+             ;; apostrophe.
+             (eq (char-before (point)) ?')
+             ;; FIXME: Hyphens are a completely different story with
+             ;; capitalization.
+             (eq (char-before (point)) ?-))
             (forward-word 1))
            ;; Downcase words that should be
            ((member (downcase this-word) downcase-word-list)
