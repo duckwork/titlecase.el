@@ -165,13 +165,17 @@
   (save-excursion
     (save-match-data
       (goto-char begin)
+      ;; Skip blank lines & white-space (where `current-word' would return nil).
+      (skip-chars-forward "\r\n\v\f[:blank:]" end)
+      (setq begin (point))
+
       (let (;; Constants during this function's runtime
             (case-fold-search nil)
             (downcase-word-list (symbol-value
                                  (intern (format "titlecase-lowercase-%s"
                                                  style))))
             ;; State variables
-            (this-word (current-word))
+            (this-word nil) ;; Set in the loop.
             (force-capitalize t))
         ;; If the region is in ALL-CAPS, normalize it first
         (unless (re-search-forward "[[:lower:]]" end :noerror)
