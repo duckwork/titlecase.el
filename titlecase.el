@@ -2,7 +2,7 @@
 
 ;; Author: Case Duckworth <acdw@acdw.net>
 ;; Maintainer: Case Duckworth <acdw@acdw.net>
-;; Version: 0.2.2
+;; Version: 0.3.0
 ;; URL: https://github.com/duckwork/titlecase.el
 ;; Package-Requires: ((emacs "25.1"))
 
@@ -163,7 +163,7 @@
   "Title-case implementation.
 `titlecase-force-cap-after-punc' must be handled by the caller.
 This is expected to have run in a block that uses `save-excursion' and
-`save-match-data'. See documentation for `titlecase-region-with-style'
+`save-match-data'.  See documentation for `titlecase-region-with-style'
 for docs on BEGIN, END and STYLE."
   (let (;; Constants during this function's runtime
         (case-fold-search nil)
