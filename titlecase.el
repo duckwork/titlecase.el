@@ -23,13 +23,16 @@
 ;; capitalizing headings a little easier.  I'll expound more on this in the USE
 ;; section, below.
 
-;; Adapted from https://hungyi.net/posts/programmers-way-to-title-case/ and
-;; https://github.com/novoid/title-capitalization.el, and with rules from
-;; https://capitalizemytitle.com/#capitalizationrules
-
-;; More prior art:
+;; Prior art:
 
 ;; - https://emacs.stackexchange.com/questions/66361/#66362
+;; - https://github.com/novoid/title-capitalization.el
+;; - https://hungyi.net/posts/programmers-way-to-title-case/
+
+;; Rules:
+
+;; - https://capitalizemytitle.com/#capitalizationrules
+;; - https://titlecaseconverter.com/rules/
 
 ;; INSTALLATION:
 

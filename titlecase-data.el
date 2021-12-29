@@ -1852,15 +1852,17 @@ See `titlecase-styles-capitalize-non-short-words'.")
 
 (defvar titlecase-lowercase-chicago (append titlecase-articles
                                             titlecase-prepositions
-                                            titlecase-coordinating-conjunctions)
+                                            '("as" "and" "but" "for" "nor"
+                                              "or"))
   "Words to lowercase in Chicago Style.
-Include: articles, coordinating conjunctions, prepositions, and
+Include: articles, and, but, for, nor, or, prepositions, and
 \"to\" in an infinitive (though that's caught as a preposition).")
 
 (defvar titlecase-lowercase-apa (append titlecase-articles
                                         (seq-filter (lambda (p)
                                                       (< (length p) 4))
-                                                    titlecase-prepositions))
+                                                    titlecase-prepositions)
+                                        '("as" "if"))
   "Words to lowercase in APA Style.")
 
 (defvar titlecase-lowercase-mla (append titlecase-articles
@@ -1875,7 +1877,8 @@ Include: articles, coordinating conjunctions, prepositions, and
                                        (seq-filter
                                         (lambda (p)
                                           (< (length p) 4))
-                                        titlecase-coordinating-conjunctions))
+                                        titlecase-coordinating-conjunctions
+                                        '("as" "if")))
   "Words to lowercase in AP Style.")
 
 (defvar titlecase-lowercase-bluebook (append titlecase-articles
@@ -1893,10 +1896,16 @@ Include: articles, coordinating conjunctions, prepositions, and
                                                     titlecase-prepositions))
   "Words to lowercase in AMA Style.")
 
-(defvar titlecase-lowercase-nyt (append titlecase-articles
-                                        titlecase-prepositions
-                                        titlecase-coordinating-conjunctions)
-  "Words to lowercase in New York Times Style.")
+(defvar titlecase-lowercase-nyt '("as" "and" "as" "at" "but" "by" "en" "for"
+                                  "in" "if" "of" "on" "or" "the" "to" "v." "vs."
+                                  "via")
+  "Words to lowercase in New York Times Style.
+NYT is unique in explicitly listing all words to lowercase.
+Thanks, NYT!  Of course, these should be capitalized when used as
+adverbs, and \"for\" should be capitalized \"if it takes the
+place of a verb meaning 'support' or 'advocate.'\" In addition,
+\"in\" and \"on\" are generally capitalized when used as
+adjectives in actual NYT headlines.")
 
 (defvar titlecase-lowercase-wikipedia
   (append titlecase-articles
