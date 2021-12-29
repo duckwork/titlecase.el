@@ -240,8 +240,22 @@
            (t (funcall titlecase-default-case-function 1)))
           ;; If the word ends with a :, ., ?, newline, or carriage-return,
           ;; force the next word to be capitalized.
-          (setq force-capitalize (looking-at titlecase-force-cap-after-punc t))
-          (skip-syntax-forward "^w" end))
+          ;;
+          ;; Even though the majority of cases will end with the delimiter,
+          ;; there may be trailing space or other kinds of delimiters
+          ;; proceeding the known characters - which should not prevent
+          ;; the known delimiters from being detected.
+          ;; For this reason - check all text for delimiters between words.
+          (let ((pos-prev (point))
+                (pos-next
+                 (progn
+                   (skip-syntax-forward "^w" end)
+                   (point))))
+            (setq force-capitalize
+                  (save-excursion
+                    (goto-char pos-prev)
+                    (re-search-forward titlecase-force-cap-after-punc
+                                       pos-next :noerror)))))
         ;; Capitalize the last word, only in some styles
         (when (memq style titlecase-styles-capitalize-last-word)
           (backward-word 1)
