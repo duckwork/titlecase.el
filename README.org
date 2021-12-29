@@ -108,13 +108,8 @@ long-asked-for sanity in your titles.
 
 * License
 
-Everyone is permitted to do whatever they like with this software
-without limitation.  This software comes without any warranty
-whatsoever, but with two pieces of advice:
-
-- Be kind to yourself.
-- Make good choices.
-
+This package is licensed under the terms of the GNU General Public License,
+version 3.  See LICENSE for the full text.
 
 * Contributing!
 

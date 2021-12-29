@@ -6,13 +6,18 @@
 ;; URL: https://github.com/duckwork/titlecase.el
 ;; Package-Requires: ((emacs "25.1"))
 
-;;; License:
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 
-;; Everyone is permitted to do whatever they like with this software
-;; without limitation.  This software comes without any warranty
-;; whatsoever, but with two pieces of advice:
-;; - Be kind to yourself.
-;; - Make good choices.
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
