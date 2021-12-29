@@ -78,6 +78,10 @@
  non_ascii_multiple_1
  "απω απω"
  "Απω Απω")
+(ert-deftest-decl-pair ;; See issue #11.
+ special-chars-1
+ "⁽"
+ "⁽")
 
 (provide 'titlecase-tests)
 ;;; titlecase-tests.el ends here

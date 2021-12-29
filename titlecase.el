@@ -166,7 +166,9 @@
     (save-match-data
       (goto-char begin)
       ;; Skip blank lines & white-space (where `current-word' would return nil).
-      (skip-chars-forward "\r\n\v\f[:blank:]" end)
+      ;; It's important this uses the same logic that `current-word' uses to
+      ;; scan for words, or this may be nil when it's not expected. See #11.
+      (skip-syntax-forward "^w" end)
       (setq begin (point))
       (let (;; Constants during this function's runtime
             (case-fold-search nil)
