@@ -38,7 +38,7 @@
   `(ert-deftest ,test-id ()
      (with-temp-buffer
        (insert ,text-initial)
-       (titlecase-dwim)
+       (titlecase-region (point-min) (point-max))
        (should (equal ,text-expected (buffer-string))))))
 
 ;; Tests.
@@ -90,6 +90,23 @@
  punctuation-semicolon-1
  "test; of mice and men"
  "Test; Of Mice and Men")
+
+(ert-deftest-decl-pair
+ punctuation-newline_1
+ "test\nof mice and men"
+ "Test\nOf Mice and Men")
+(ert-deftest-decl-pair
+ punctuation-newline_2
+ "test \nof mice and men"
+ "Test \nOf Mice and Men")
+(ert-deftest-decl-pair
+ punctuation-newline_3
+ "test@\nof mice and men"
+ "Test@\nOf Mice and Men")
+(ert-deftest-decl-pair
+ punctuation-newline_4
+ "test\n@of mice and men"
+ "Test\n@Of Mice and Men")
 
 (provide 'titlecase-tests)
 ;;; titlecase-tests.el ends here
