@@ -155,7 +155,7 @@
   "What to do to a word when a style doesn't specify what to do."
   :type 'function)
 
-(defcustom titlecase-force-cap-after-punc "[:.?;\n\r]"
+(defcustom titlecase-force-cap-after-punc "[.?;\\:\n\r]"
   "Regexp to force the next word capitalized."
   :type 'regexp)
 
@@ -187,7 +187,7 @@
           (setq this-word (current-word))
           (cond
            ;; Skip ALL-CAPS words
-           ((string-match "^[[:upper:]]+$" this-word)
+           ((string-match-p "^[[:upper:]]+$" this-word)
             (forward-word 1))
            ;; Phrasal verbs!
            ((and (memq style titlecase-styles-capitalize-phrasal-verbs)
@@ -240,7 +240,7 @@
            (t (funcall titlecase-default-case-function 1)))
           ;; If the word ends with a :, ., ?, newline, or carriage-return,
           ;; force the next word to be capitalized.
-          (setq force-capitalize (looking-at titlecase-force-cap-after-punc))
+          (setq force-capitalize (looking-at titlecase-force-cap-after-punc t))
           (skip-syntax-forward "^w" end))
         ;; Capitalize the last word, only in some styles
         (when (memq style titlecase-styles-capitalize-last-word)
