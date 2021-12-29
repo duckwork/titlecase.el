@@ -78,6 +78,14 @@
  non_ascii_multiple_1
  "απω απω"
  "Απω Απω")
+(ert-deftest-decl-pair ;; See issue #11.
+ punctuation-colon-1
+ "test: of mice and men"
+ "Test: Of Mice and Men")
+(ert-deftest-decl-pair
+ punctuation-semicolon-1
+ "test; of mice and men"
+ "Test; Of Mice and Men")
 
 (provide 'titlecase-tests)
 ;;; titlecase-tests.el ends here
