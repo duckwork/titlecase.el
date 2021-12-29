@@ -2,9 +2,7 @@
 
 ;; Author: Case Duckworth <acdw@acdw.net>
 ;; Maintainer: Case Duckworth <acdw@acdw.net>
-;; Version: 0.2.0
 ;; URL: https://github.com/duckwork/titlecase.el
-;; Package-Requires: ((emacs "25.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

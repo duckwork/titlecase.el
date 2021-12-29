@@ -2,7 +2,7 @@
 
 ;; Author: Case Duckworth <acdw@acdw.net>
 ;; Maintainer: Case Duckworth <acdw@acdw.net>
-;; Version: 0.2.1
+;; Version: 0.2.2
 ;; URL: https://github.com/duckwork/titlecase.el
 ;; Package-Requires: ((emacs "25.1"))
 
@@ -168,7 +168,6 @@
       ;; Skip blank lines & white-space (where `current-word' would return nil).
       (skip-chars-forward "\r\n\v\f[:blank:]" end)
       (setq begin (point))
-
       (let (;; Constants during this function's runtime
             (case-fold-search nil)
             (downcase-word-list (symbol-value
