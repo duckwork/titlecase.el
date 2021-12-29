@@ -240,7 +240,17 @@
            (t (funcall titlecase-default-case-function 1)))
           ;; If the word ends with a :, ., ?, newline, or carriage-return,
           ;; force the next word to be capitalized.
-          (setq force-capitalize (looking-at titlecase-force-cap-after-punc t))
+          (setq force-capitalize
+                (save-excursion
+                  ;; Skip forward white-space to allow for separators
+                  ;; to be counted even when there is space between them
+                  ;; and the word, while this isn't so common with colons,
+                  ;; full-stop's etc. When there _is_ spaces around these
+                  ;; characters, it's harmless to use this detection.
+                  ;; It also resolves a bug where space before a new-line
+                  ;; prevented the new-line from being seen.
+                  (skip-syntax-forward "-" (min end (line-end-position)))
+                  (looking-at titlecase-force-cap-after-punc t)))
           (skip-syntax-forward "^w" end))
         ;; Capitalize the last word, only in some styles
         (when (memq style titlecase-styles-capitalize-last-word)
