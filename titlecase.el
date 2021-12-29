@@ -155,7 +155,7 @@
   "What to do to a word when a style doesn't specify what to do."
   :type 'function)
 
-(defcustom titlecase-force-cap-after-punc "[:.?;\n\r]"
+(defcustom titlecase-force-cap-after-punc "[.?;\\:\n\r]"
   "Regexp to force the next word capitalized."
   :type 'regexp)
 
