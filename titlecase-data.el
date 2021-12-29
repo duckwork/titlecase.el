@@ -584,8 +584,8 @@ Include: articles, and, but, for, nor, or, prepositions, and
                                        (seq-filter
                                         (lambda (p)
                                           (< (length p) 4))
-                                        titlecase-coordinating-conjunctions
-                                        '("as" "if")))
+                                        titlecase-coordinating-conjunctions)
+                                       '("as" "if"))
   "Words to lowercase in AP Style.")
 
 (defvar titlecase-lowercase-bluebook (append titlecase-articles
