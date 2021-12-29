@@ -79,6 +79,10 @@
  "απω απω"
  "Απω Απω")
 (ert-deftest-decl-pair ;; See issue #11.
+ special-chars-1
+ "⁽"
+ "⁽")
+(ert-deftest-decl-pair
  punctuation-colon-1
  "test: of mice and men"
  "Test: Of Mice and Men")
