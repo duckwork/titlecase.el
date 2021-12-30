@@ -203,8 +203,8 @@ for docs on BEGIN, END and STYLE."
             (skip-syntax-forward "^w" end)
             (setq this-word (current-word))
             ;; Loop through the rest
-            (while (member (downcase this-word)
-                           (mapcar #'car-safe next-words))
+            (while (and this-word (member (downcase this-word)
+                                          (mapcar #'car-safe next-words)))
               (capitalize-word 1)
               (skip-syntax-forward "^w" end)
               (setq this-word (current-word)
