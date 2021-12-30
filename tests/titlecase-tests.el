@@ -28,9 +28,16 @@
 
 ;;; Code:
 
-;; Setup load path.
+
+;; ---------------------------------------------------------------------------
+;; Setup Environment
+
 (add-to-list 'load-path (concat (file-name-directory load-file-name) ".."))
 (require 'titlecase)
+
+
+;; ---------------------------------------------------------------------------
+;; Test Macros
 
 ;; Simplify test declaration.
 (defmacro ert-deftest-decl-pair (test-id text-initial text-expected)
@@ -68,12 +75,19 @@
   ;; See emacs's own: MAX_CHAR = 0x3FFFFF = 4194303 (inclusive).
   `(ert-deftest-decl-geneated-data-char-range ,test-id ,pass ,len ,seed 4194303))
 
+;; ---------------------------------------------------------------------------
+;; Test (NOP)
+;;
+;; Tests that should do nothing to the input.
 
-;; Tests.
-(ert-deftest-decl-pair
- nop_1
- ""
- "")
+(ert-deftest-decl-nop nop_1 "")
+
+
+;; ---------------------------------------------------------------------------
+;; Test (Basic)
+;;
+;; Tests that should meet an expected output.
+
 (ert-deftest-decl-pair
  simple_1
  "hello world"
@@ -157,6 +171,29 @@
 (ert-deftest-decl-geneated-ascii
  generated_64_chars titlecase-tests-passes 64 titlecase-tests-default-seed)
 
+;; ---------------------------------------------------------------------------
+;; Test (Phrasal Verbs)
+
+(ert-deftest-decl-pair
+ phrasal_verbs_1
+ "bang on about"
+ "Bang On About")
+(ert-deftest-decl-pair
+ phrasal_verbs_partial_1
+ "bang"
+ "Bang")
+(ert-deftest-decl-pair
+ phrasal_verbs_partial_2
+ "bang on"
+ "Bang On")
+(ert-deftest-decl-pair
+ phrasal_verbs_extra_1
+ "on bang on about on about"
+ "On Bang On About on About")
+(ert-deftest-decl-pair
+ phrasal_verbs_excape_chars_1
+ "\32Go\35\n"
+ "\32Go\35\n")
 
 (provide 'titlecase-tests)
 ;;; titlecase-tests.el ends here
