@@ -51,6 +51,29 @@
 (defmacro ert-deftest-decl-nop (test-id text)
   `(ert-deftest-decl-pair ,test-id ,text ,text))
 
+(defmacro ert-deftest-decl-geneated-data-char-range (test-id pass len seed max)
+  "Create a test named TEST-ID that uses random data."
+  `(ert-deftest ,test-id ()
+     ;; Initialize the seed.
+     (random (format "%d" ,seed))
+     (let ((max-char-minus-1 (1- ,max)))
+       (dotimes (_ ,pass)
+         (with-temp-buffer
+           (dotimes (_ ,len)
+             (insert (char-to-string (1+ (random max-char-minus-1)))))
+           (let ((text-initial (buffer-string)))
+             (titlecase-region (point-min) (point-max))
+             ;; Simply test only the case changed.
+             (should (equal (downcase text-initial)
+                            (downcase (buffer-string))))))))))
+
+(defmacro ert-deftest-decl-geneated-ascii (test-id pass len seed)
+  `(ert-deftest-decl-geneated-data-char-range ,test-id ,pass ,len ,seed 128))
+
+;; FIXME: can cause bugs, these look to be errors in emacs it's self.
+(defmacro ert-deftest-decl-geneated-unicode (test-id pass len seed)
+  ;; See emacs's own: MAX_CHAR = 0x3FFFFF = 4194303 (inclusive).
+  `(ert-deftest-decl-geneated-data-char-range ,test-id ,pass ,len ,seed 4194303))
 
 ;; ---------------------------------------------------------------------------
 ;; Test (NOP)
@@ -129,6 +152,26 @@
 
 
 ;; ---------------------------------------------------------------------------
+;; Test (Generated Data)
+;;
+;; This is mainly a stress test to ensure garbage input doesn't cause errors.
+;; Actual correctness is not ensured.
+
+;; NOTE: to avoid this taking overly long, the number of tests has been reduced,
+;; Use 10,000+ for more extensive stress testing.
+(defconst titlecase-tests-passes 128)
+(defconst titlecase-tests-default-seed 9876543210)
+
+(ert-deftest-decl-geneated-ascii
+ generated_1_chars titlecase-tests-passes 1 titlecase-tests-default-seed)
+(ert-deftest-decl-geneated-ascii
+ generated_2_chars titlecase-tests-passes 2 titlecase-tests-default-seed)
+(ert-deftest-decl-geneated-ascii
+ generated_5_chars titlecase-tests-passes 5 titlecase-tests-default-seed)
+(ert-deftest-decl-geneated-ascii
+ generated_64_chars titlecase-tests-passes 64 titlecase-tests-default-seed)
+
+;; ---------------------------------------------------------------------------
 ;; Test (Phrasal Verbs)
 
 (ert-deftest-decl-pair
@@ -151,7 +194,6 @@
  phrasal_verbs_excape_chars_1
  "\32Go\35\n"
  "\32Go\35\n")
-
 
 (provide 'titlecase-tests)
 ;;; titlecase-tests.el ends here
