@@ -54,20 +54,20 @@
 
 ;; The tricky part is figuring out what words to capitalize in the title.
 
-;; Articles ("a", "an", "the") are downcased.
+;; Articles ("a", "an", "the") are down-cased.
 
 ;; The first word of a title and all "important words" (generally nouns,
 ;; pronouns, adjectives, verbs, and adverbs) are capitalized.  The last word of
 ;; a title is always capitalized, but only in Chicago, AP, Bluebook, AMA, NY
 ;; Times, and Wikipedia.
 
-;; /All/ prepositions are downcased in Chicago, MLA, AP, NY Times, and
+;; /All/ prepositions are down-cased in Chicago, MLA, AP, NY Times, and
 ;; Wikipedia, regardless of length; for APA, Bluebook, AMA, and Wikipedia, only
 ;; prepositions shorter than 5 letters are (presumably, capitalize those longer
 ;; than 5 letters, however only Wikipedia was clear on that point).
 
 ;; Coordinating conjunctions are capitalized in Chicago and APA (presumably),
-;; but downcased in MLA, AP, Bluebook, AMA, NY Times, and Wikipedia.
+;; but down-cased in MLA, AP, Bluebook, AMA, NY Times, and Wikipedia.
 
 ;; Hyphenated words are tricky: I could possibly figure out a way to have lookup
 ;; tables to determine when to capitalize the second part of a hyphenated word,
@@ -90,11 +90,11 @@
 ;; - Lowercase the first non-Greek letter after a capital Greek letter (e.g.,
 ;;   "Δ-9-tetrahydrocannabinol")
 
-;; (The AMA also has a rule about capitilizing the genus but not species
-;; epithet, but the lookup on that would be wild as hell, so I trust yall to
-;; know on that one.)
+;; (The AMA also has a rule about capitalizing the genus but not species
+;; epithet, but the lookup on that would be wild as hell,
+;; so I trust you all to know on that one.)
 
-;; "To" as an infinitive is downcased in all /except/ AP.  This is a rule I
+;; "To" as an infinitive is down-cased in all /except/ AP.  This is a rule I
 ;; simply cannot implement without knowing whether the /next/ word is a verb,
 ;; which would require expensive lookups, which even then wouldn't be foolproof.
 
@@ -103,8 +103,8 @@
 ;; capitalized, but again, open categories like phrasal verbs simply do not work
 ;; in a package like this.
 
-;; ALL OF THIS IS TO SAY that titlecase offers a best-effort attempt to
-;; titlecase a line or region of text, but you should absolutely
+;; ALL OF THIS IS TO SAY that title-case offers a best-effort attempt to
+;; title-case a line or region of text, but you should absolutely
 ;; double-triple-check against the style guide you're writing for if you're
 ;; trying for publication or something like that.
 
@@ -126,7 +126,7 @@
 ;; For even more customization, of course, you can tweak this file's `defvar'
 ;; values, but There Be Monsters.
 
-;; Finally, there's the titlecase-style `sentence' if you want some
+;; Finally, there's the `titlecase-style' `sentence' if you want some
 ;; long-asked-for sanity in your titles.
 
 ;;; Code:
@@ -135,12 +135,12 @@
 (require 'titlecase-data)
 
 (defgroup titlecase nil
-  "Customizations for titlecasing phrases."
+  "Customization for title-casing phrases."
   :prefix "titlecase-"
   :group 'text)
 
 (defcustom titlecase-style 'chicago
-  "Which style to use when titlecasing."
+  "Which style to use when title-casing."
   :type '(choice (const :tag "Chicago Style" chicago)
                  (const :tag "APA Style" apa)
                  (const :tag "MLA Style" mla)
@@ -165,37 +165,35 @@
 This is expected to have run in a block that uses `save-excursion' and
 `save-match-data'.  See documentation for `titlecase-region-with-style'
 for docs on BEGIN, END and STYLE."
-  (let (;; Constants during this function's runtime
+  (let ( ;; Constants during this function's runtime.
         (case-fold-search nil)
         (downcase-word-list (symbol-value
                              (intern (format "titlecase-lowercase-%s"
                                              style)))))
 
-    ;; If the region is in ALL-CAPS, normalize it first
+    ;; If the region is in ALL-CAPS, normalize it first.
     (unless (re-search-forward "[[:lower:]]" end :noerror)
       (downcase-region begin end))
 
-    ;; Skip blank lines & white-space
-    ;; (where `current-word' would return nil).
-    ;; It's important this uses the same logic that `current-word'
-    ;; uses to scan for words, or this may be nil
-    ;; when it's not expected. See #11.
+    ;; Skip blank lines & white-space (where `current-word' would return nil).
+    ;; It's important this uses the same logic that `current-word' uses to scan
+    ;; for words, or this may be nil when it's not expected. See #11.
     (goto-char begin)
     (skip-syntax-forward "^w" end)
     (setq begin (point))
 
-    ;; And loop over the rest
+    ;; And loop over the rest.
     (while (< (point) end)
       (let ((this-word (current-word)))
         (cond
-         ;; Skip ALL-CAPS words
+         ;; Skip ALL-CAPS words.
          ((string-match-p "^[[:upper:]]+$" this-word)
           (forward-word 1))
          ;; Phrasal verbs!
          ((and (memq style titlecase-styles-capitalize-phrasal-verbs)
                (member (downcase this-word)
                        (mapcar #'car titlecase-phrasal-verbs)))
-          ;; We need to do a little state machine thingy here
+          ;; We need to do a little state machine thingy here.
           (let ((next-words (assoc this-word titlecase-phrasal-verbs))
                 (bail-pt (point)))
             ;; Take care of the first word --- this is inelegant.
@@ -218,41 +216,40 @@ for docs on BEGIN, END and STYLE."
          ;; Force capitalization if this is the first word.
          ((eq begin (point))
           (capitalize-word 1))
-         ;; AP capitalizes /all/ words longer than 3 letters
+         ;; AP capitalizes /all/ words longer than 3 letters.
          ((and (memq style titlecase-styles-capitalize-non-short-words)
                (> (length this-word) titlecase-short-word-length))
           (capitalize-word 1))
-         ;; Skip the next word if ...
+         ;; Skip the next word if:
          ((or
            ;; Sentence style just capitalizes the first word.  Since we can't
            ;; be sure how the user has already capitalized anything, we just
            ;; skip the current word.
            (eq style 'sentence)
-           ;; None of the styles require a capital letter after an
-           ;; apostrophe.
+           ;; None of the styles require a capital letter after an apostrophe.
            (eq (char-before (point)) ?')
            ;; FIXME: Hyphens are a completely different story with
            ;; capitalization.
            (eq (char-before (point)) ?-))
           (forward-word 1))
-         ;; Downcase words that should be
+         ;; Down-case words that should be.
          ((member (downcase this-word) downcase-word-list)
           (downcase-word 1))
-         ;; Otherwise, do the default function on the word
+         ;; Otherwise, do the default function on the word.
          (t
           (funcall titlecase-default-case-function 1))))
 
       ;; Step over the loop.
       (skip-syntax-forward "^w" end))
 
-    ;; Capitalize the last word, only in some styles
+    ;; Capitalize the last word, only in some styles.
     (when (memq style titlecase-styles-capitalize-last-word)
       (backward-word 1)
       (when (>= (point) begin)
         (capitalize-word 1)))))
 
 (defun titlecase-region-with-style (begin end style)
-  "Titlecase the region of English text from BEGIN to END, using STYLE."
+  "Title-case the region of English text from BEGIN to END, using STYLE."
   (interactive "*r")
   (save-excursion
     (save-match-data
@@ -268,14 +265,14 @@ for docs on BEGIN, END and STYLE."
 
 ;;;###autoload
 (defun titlecase-region (begin end)
-  "Titlecase the region of English text from BEGIN to END.
+  "Title-case the region of English text from BEGIN to END.
 Uses the style provided in `titlecase-style'."
   (interactive "*r")
   (titlecase-region-with-style begin end titlecase-style))
 
 ;;;###autoload
 (defun titlecase-dwim ()
-  "Titlecase either the region, if active, or the current line."
+  "Title-case either the region, if active, or the current line."
   (interactive)
   (if (region-active-p)
       (titlecase-region (region-beginning) (region-end))
