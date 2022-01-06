@@ -297,12 +297,21 @@ will prompt the user for the style to use."
     (titlecase-region-with-style begin end style)))
 
 ;;;###autoload
-(defun titlecase-dwim ()
-  "Title-case either the region, if active, or the current line."
-  (interactive)
-  (if (region-active-p)
-      (titlecase-region (region-beginning) (region-end))
-    (titlecase-region (point-at-bol) (point-at-eol))))
+(defun titlecase-line (&optional point style interactive)
+  "Title-case the line at POINT.
+Uses the style provided in `titlecase-style', unless optional
+STYLE is provided.
+
+When called interactively, POINT is the current point, and
+calling with \\[universal-argument] \\[titlecase-line] will
+prompt the user for the style to use."
+  (interactive "d\ni\nP")
+  (save-excursion
+    (goto-char point)
+    (let ((style (or style
+                     (and interactivep (titlecase--read-style))
+                     titlecase-style)))
+      (titlecase-region (line-beginning-position) (line-end-position) style))))
 
 ;;;###autoload
 (defun titlecase-dwim (&optional style interactive)
