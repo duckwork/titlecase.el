@@ -319,6 +319,25 @@ prompt the user for the style to use."
       (titlecase-region (line-beginning-position) (line-end-position) style))))
 
 ;;;###autoload
+(defun titlecase-sentence (&optional point style interactivep)
+  "Title-case the sentence at POINT.
+Uses the style provided in `titlecase-style', unless optional
+STYLE is provided.
+
+When called interactively, POINT is the current point, and
+calling with \\[universal-argument] \\[titlecase-sentence] will
+prompt the user for the style to use."
+  (interactive "d\ni\nP")
+  (let ((style (titlecase--arg style interactivep)))
+    (save-excursion
+      (goto-char point)
+      (titlecase-region (progn (backward-sentence)
+                               (point))
+                        (progn (forward-sentence)
+                               (point))
+                        style))))
+
+;;;###autoload
 (defun titlecase-dwim (&optional style interactive)
   "Title-case either the region, if active, or the current line.
 Uses the style provided in `titlecase-style', unless optional
