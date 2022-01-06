@@ -21,113 +21,25 @@
 
 ;;; Commentary:
 
-;; It turns out, capitalizing titles is Hard.  This library only does it in
-;; English, and even then, it's pretty jankily put-together.  It's due, mostly,
-;; to the fact that many words can mean many different things, depending, and I
-;; don't want to put a whole dictionary in this package just to make
-;; capitalizing headings a little easier.  I'll expound more on this in the USE
-;; section, below.
+;; This library strives to be the most accurate possible with title-casing
+;; sentences, lines, and regions of text in English prose according to a number
+;; of styles guides' capitalization rules.  It is necessarily a best-effort; due
+;; to the vaguaries of written English it's impossible to completely correctly
+;; capitalize aribtrary titles.  So be sure to proofread and copy-edit your
+;; titles before sending them off to be published, and never trust a computer.
 
-;; Prior art:
-
-;; - https://emacs.stackexchange.com/questions/66361/#66362
-;; - https://github.com/novoid/title-capitalization.el
-;; - https://hungyi.net/posts/programmers-way-to-title-case/
-
-;; Rules:
-
-;; - https://capitalizemytitle.com/#capitalizationrules
-;; - https://titlecaseconverter.com/rules/
-
-;; INSTALLATION:
+;; INSTALLATION and USE:
 
 ;; Make sure both titlecase.el and titlecase-data.el are in your `load-path',
-;; and `require' as per usual.
+;; and `require' titlecase.  You should then be able to call the interactive
+;; functions defined in this file.
 
-;; USE:
+;;; CUSTOMIZATION:
 
-;; The only setting you really should need to set is `titlecase-style', which
-;; see.  Each of these styles has a different set of rules regarding which words
-;; to capitalize in a title.  After you've set `titlecase-style', you can bind
-;; the command `titlecase-dwim' to a key, or call it using M-x, and it will
-;; either title-case your region (if it's active) or the current line.
-
-;; The tricky part is figuring out what words to capitalize in the title.
-
-;; Articles ("a", "an", "the") are down-cased.
-
-;; The first word of a title and all "important words" (generally nouns,
-;; pronouns, adjectives, verbs, and adverbs) are capitalized.  The last word of
-;; a title is always capitalized, but only in Chicago, AP, Bluebook, AMA, NY
-;; Times, and Wikipedia.
-
-;; /All/ prepositions are down-cased in Chicago, MLA, AP, NY Times, and
-;; Wikipedia, regardless of length; for APA, Bluebook, AMA, and Wikipedia, only
-;; prepositions shorter than 5 letters are (presumably, capitalize those longer
-;; than 5 letters, however only Wikipedia was clear on that point).
-
-;; Coordinating conjunctions are capitalized in Chicago and APA (presumably),
-;; but down-cased in MLA, AP, Bluebook, AMA, NY Times, and Wikipedia.
-
-;; Hyphenated words are tricky: I could possibly figure out a way to have lookup
-;; tables to determine when to capitalize the second part of a hyphenated word,
-;; but I haven't implemented them yet.  At any rate, the rules tend to be vague
-;; enough that it's hard to program anyway: For example, Chicago, APA, MLA, and
-;; AP lowercase the second word "after a hyphenated prefix (e.g., Mid-, Anti-,
-;; Super, etc.) in compound modifiers," but MLA and APA capitalize the second
-;; part of "hyphenated major words (e.g., Self-Report not Self-report).
-
-;; Perhaps unsurprisingly, the AMA (American Medical Association, used in the
-;; scientific community) has the most comprehensive capitalization rules around
-;; hyphenated words.  I'll just copy-paste the bullet points here:
-
-;; - Lowercase the second word in a hyphenated compound when it is a prefix or
-;;   suffix (e.g., "Anti-itch","world-wide") or part of a single word.
-;; - Capitalize the second word in a hyphenated compound if both words are equal
-;;   and not suffices or prefixes (e.g., "Cost-Benefit")
-;; - Capitalize the first non-Greek letter after a lowercase Greek letter (e.g.,
-;;   "ω-Bromohexanoic")
-;; - Lowercase the first non-Greek letter after a capital Greek letter (e.g.,
-;;   "Δ-9-tetrahydrocannabinol")
-
-;; (The AMA also has a rule about capitalizing the genus but not species
-;; epithet, but the lookup on that would be wild as hell,
-;; so I trust you all to know on that one.)
-
-;; "To" as an infinitive is down-cased in all /except/ AP.  This is a rule I
-;; simply cannot implement without knowing whether the /next/ word is a verb,
-;; which would require expensive lookups, which even then wouldn't be foolproof.
-
-;; Now that I'm thinking about it, most styles count phrasal verbs (like "play
-;; with") as important enough to capitalize, when "with" would usually /not/ be
-;; capitalized, but again, open categories like phrasal verbs simply do not work
-;; in a package like this.
-
-;; ALL OF THIS IS TO SAY that title-case offers a best-effort attempt to
-;; title-case a line or region of text, but you should absolutely
-;; double-triple-check against the style guide you're writing for if you're
-;; trying for publication or something like that.
-
-;; FURTHER CUSTOMIZATION
-
-;; While `titlecase-style' /should/ be the only customization option you need to
-;; tweak, it wouldn't be Emacs if there weren't many more.
-
-;; Most of these style guides fail to specify what to do when a
-;; word does /not/ fit one of the criteria listed.  The customization option
-;; `titlecase-default-case-function' controls what to do there.
-
-;; None of the styles specify what to do after certain punctuation marks like
-;; . : ? etc.  Some do specify "capitalize the first word of ... any
-;; subtitle/subheading," which might refer to a word after :, but I'm not sure.
-;; Anyway, you can customize `titlecase-force-cap-after-punc' to a regexp which,
-;; if it matches after a word, will force the next word to be capitalized.
-
-;; For even more customization, of course, you can tweak this file's `defvar'
-;; values, but There Be Monsters.
-
-;; Finally, there's the `titlecase-style' `sentence' if you want some
-;; long-asked-for sanity in your titles.
+;; Only two customization options are probably going to be of any interest:
+;; `titlecase-style' (the style to use for capitalizing titles), and
+;; `titlecase-dwim-non-region-function', which determines what to do when
+;; `titlecase-dwim' isn't acting on a region.
 
 ;;; Code:
 

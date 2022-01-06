@@ -22,6 +22,88 @@
 ;; Since the `titlecase' package requires a lot of data, that data lives here so
 ;; as to not clog up the main package.
 
+;; Since [[https://github.com/duckwork/titlecase.el/issues/23][Issue #23]] makes
+;; a good point that I should like, make more sense in the commentary and README
+;; of this repository.  At the same time, those couple of comments I wrote in
+;; there I don't want to just /delete/, so until I write this up in a proper
+;; blog post, I've included it here, in the data file, because this is where
+;; these implementation notes will be of most interest.
+
+;; The only setting you really should need to set is =titlecase-style=, which
+;; see.  Each of these styles has a different set of rules regarding which words
+;; to capitalize in a title.  After you've set =titlecase-style=, you can bind
+;; the command =titlecase-dwim= to a key, or call it using M-x, and it will
+;; either title-case your region (if it's active) or the current line.
+
+;; The tricky part is figuring out what words to capitalize in the title.
+
+;; Articles (~a~, ~an~, ~the~) are downcased.
+
+;; The first word of a title and all "important words" (generally nouns,
+;; pronouns, adjectives, verbs, and adverbs) are capitalized.  The last word of
+;; a title is always capitalized, but only in Chicago, AP, Bluebook, AMA, NY
+;; Times, and Wikipedia.
+
+;; /All/ prepositions are downcased in Chicago, MLA, AP, NY Times, and
+;; Wikipedia, regardless of length; for APA, Bluebook, AMA, and Wikipedia, only
+;; prepositions shorter than 5 letters are (presumably, capitalize those longer
+;; than 5 letters, however only Wikipedia was clear on that point).
+
+;; Coordinating conjunctions are capitalized in Chicago and APA (presumably),
+;; but downcased in MLA, AP, Bluebook, AMA, NY Times, and Wikipedia.
+
+;; Hyphenated words are tricky: I could possibly figure out a way to have lookup
+;; tables to determine when to capitalize the second part of a hyphenated word,
+;; but I haven't implemented them yet.  At any rate, the rules tend to be vague
+;; enough that it's hard to program anyway: For example, Chicago, APA, MLA, and
+;; AP lowercase the second word "after a hyphenated prefix (e.g., Mid-, Anti-,
+;; Super, etc.) in compound modifiers," but MLA and APA capitalize the second
+;; part of "hyphenated major words (e.g., Self-Report not Self-report).
+
+;; Perhaps unsurprisingly, the AMA (American Medical Association, used in the
+;; scientific community) has the most comprehensive capitalization rules around
+;; hyphenated words.  I'll just copy-paste the bullet points here:
+
+;; - Lowercase the second word in a hyphenated compound when it is
+;; a prefix or suffix (e.g., "Anti-itch","world-wide") or part of a single word.
+;; - Capitalize the second word in a hyphenated compound if both words are equal
+;; and not suffices or prefixes (e.g., "Cost-Benefit")
+;; - Capitalize the first non-Greek letter after a lowercase Greek letter (e.g.,
+;; "ω-Bromohexanoic")
+;; - Lowercase the first non-Greek letter after a capital Greek letter (e.g.,
+;; "Δ-9-tetrahydrocannabinol") #+end_quote
+
+;; (The AMA also has a rule about capitilizing the genus but not species
+;; epithet, but the lookup on that would be wild as hell, so I trust yall to
+;; know on that one.)
+
+;; ~To~ as an infinitive is downcased in all /except/ AP.  This is a rule I
+;; simply cannot implement without knowing whether the /next/ word is a verb,
+;; which would require expensive lookups, which even then wouldn't be foolproof.
+
+;; Now that I'm thinking about it, most styles count phrasal verbs (like "play
+;; with") as important enough to capitalize, when "with" would usually /not/ be
+;; capitalized, but again, open categories like phrasal verbs simply do not work
+;; in a package like this.
+
+;; ALL OF THIS IS TO SAY that titlecase offers a best-effort attempt to
+;; titlecase a line or region of text, but you should absolutely
+;; double-triple-check against the style guide you're writing for if you're
+;; trying for publication or something like that.
+
+;; SEE ALSO:
+
+;; Prior art:
+
+;; - https://emacs.stackexchange.com/questions/66361/#66362
+;; - https://github.com/novoid/title-capitalization.el
+;; - https://hungyi.net/posts/programmers-way-to-title-case/
+
+;; Rules:
+
+;; - https://capitalizemytitle.com/#capitalizationrules
+;; - https://titlecaseconverter.com/rules/
+
 ;;; Code:
 
 (defvar titlecase-prepositions
