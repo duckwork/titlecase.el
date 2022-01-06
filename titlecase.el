@@ -167,6 +167,11 @@
   "Regexp to force the next word capitalized."
   :type 'regexp)
 
+(defcustom titlecase-dwim-non-region-function #'titlecase-line
+  "What to do with `titlecase-dwim' when region isn't active.
+Recommended: `titlecase-line' or `titlecase-sentence'."
+  :type 'function)
+
 (defun titlecase--region-with-style-impl (begin end style)
   "Title-case implementation.
 `titlecase-force-cap-after-punc' must be handled by the caller.
@@ -349,7 +354,7 @@ prompt the user for the style to use."
   (let ((style (titlecase--arg style interactivep)))
     (if (region-active-p)
               (titlecase-region (region-beginning) (region-end) style)
-            (titlecase-line style))))
+      (funcall titlecase-dwim-non-region-function (point) style))))
 
 (provide 'titlecase)
 ;;; titlecase.el ends here
