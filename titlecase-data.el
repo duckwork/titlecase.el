@@ -620,5 +620,11 @@ adjectives in actual NYT headlines.")
           titlecase-coordinating-conjunctions)
   "Words to lowercase in Wikipedia Style.")
 
+(defvar titlecase-lowercase-sentence nil
+  "Words to titlecase in Sentence style.
+This is nil, since `titlecase--region-with-style-impl' deals with
+the logic here (and besides, this list would be /quite/ long when
+enumerated!)")
+
 (provide 'titlecase-data)
 ;;; titlecase-data.el ends here
