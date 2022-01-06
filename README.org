@@ -41,6 +41,12 @@ Customization interface.  Do note that the utility of customizing many of these
 variables is dubious at best, and the ~titlecase~ library has been written with
 the best efforts to keep with well-accepted title-casing styles.
 
+- ~titlecase-dwim-non-region-function~ :: What function to call when
+  ~titlecase-dwim~ doesn't operate on a region of text.  ~titlecase-line~ and
+  ~titlecase-sentence~ are good choices, but this can be any function.
+- ~titlecase-force-cap-after-punc~ :: This is a regular expression that will force
+  the next word in the title to be capitalized.  It defaults to the common
+  punctuation marks of all the styles.
 - ~titlecase-style~ :: The style of title-casing to use.  See Notes.md for a
   longer discussion of how hard title-casing can be.  As of this writing, the
   following styles are available:
@@ -67,12 +73,6 @@ the best efforts to keep with well-accepted title-casing styles.
     implementation of ~titlecase-region-with-style-impl~, and due to my tastes,
     sentence style will still capitalize words after
     ~titlecase-force-cap-after-punc~ characters.
-- ~titlecase-force-cap-after-punc~ :: This is a regular expression that will force
-  the next word in the title to be capitalized.  It defaults to the common
-  punctuation marks of all the styles.
-- ~titlecase-dwim-non-region-function~ :: What function to call when
-  ~titlecase-dwim~ doesn't operate on a region of text.  ~titlecase-line~ and
-  ~titlecase-sentence~ are good choices, but this can be any function.
 
 * References & Prior Art
 
