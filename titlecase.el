@@ -151,6 +151,9 @@
                            (sentence . "Sentence style"))
          "Available styles for title-casing.")
 
+(defvar titlecase-default-case-function #'capitalize-word
+  "What to do to a word when a style doesn't specify what to do.")
+
 (defcustom titlecase-style 'chicago
   "Which style to use when title-casing."
   :type (cons 'choice (cl-loop
@@ -158,10 +161,6 @@
                        collect (list 'const :tag (cdr style) (car style))
                        into choices
                        finally return choices)))
-
-(defcustom titlecase-default-case-function #'capitalize-word
-  "What to do to a word when a style doesn't specify what to do."
-  :type 'function)
 
 (defcustom titlecase-force-cap-after-punc "[.?!\\/;\\:\n\r]"
   "Regexp to force the next word capitalized."
