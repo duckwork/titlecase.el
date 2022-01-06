@@ -282,6 +282,15 @@ for docs on BEGIN, END and STYLE."
     (cl-loop for (s . n) in titlecase-styles
              if (equal n choice) return s)))
 
+(defun titlecase--arg (style interactivep)
+  "Process arguments to titlecase functions.
+If STYLE is passed to a function in any way, use it; otherwise,
+if INTERACTIVEP, prompt the user for a style to use.  As a
+fall-back, use `titlecase-style'."
+  (or style
+      (and interactivep (titlecase--read-style))
+      titlecase-style))
+
 ;;;###autoload
 (defun titlecase-region (begin end &optional style interactivep)
   "Title-case the region of English text from BEGIN to END.
@@ -291,13 +300,11 @@ STYLE is provided.
 When called interactively, \\[universal-argument] \\[titlecase-region]
 will prompt the user for the style to use."
   (interactive "*r\ni\nP")
-  (let ((style (or style
-                   (and interactivep (titlecase--read-style))
-                   titlecase-style)))
+  (let ((style (titlecase--arg style interactivep)))
     (titlecase-region-with-style begin end style)))
 
 ;;;###autoload
-(defun titlecase-line (&optional point style interactive)
+(defun titlecase-line (&optional point style interactivep)
   "Title-case the line at POINT.
 Uses the style provided in `titlecase-style', unless optional
 STYLE is provided.
@@ -306,11 +313,9 @@ When called interactively, POINT is the current point, and
 calling with \\[universal-argument] \\[titlecase-line] will
 prompt the user for the style to use."
   (interactive "d\ni\nP")
-  (save-excursion
-    (goto-char point)
-    (let ((style (or style
-                     (and interactivep (titlecase--read-style))
-                     titlecase-style)))
+  (let ((style (titlecase--arg style interactivep)))
+    (save-excursion
+      (goto-char point)
       (titlecase-region (line-beginning-position) (line-end-position) style))))
 
 ;;;###autoload
@@ -322,9 +327,7 @@ STYLE is provided.
 When called interactively with \\[universal-argument] \\[titlecase-dwim],
 prompt the user for the style to use."
   (interactive "i\nP")
-  (let ((style (or style
-                   (and interactivep (titlecase--read-style))
-                   titlecase-style)))
+  (let ((style (titlecase--arg style interactivep)))
     (if (region-active-p)
               (titlecase-region (region-beginning) (region-end) style)
             (titlecase-line style))))
