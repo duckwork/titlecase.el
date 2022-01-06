@@ -131,6 +131,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'seq)
 (require 'titlecase-data)
 
@@ -139,17 +140,24 @@
   :prefix "titlecase-"
   :group 'text)
 
+(defvar titlecase-styles '((chicago . "Chicago Style")
+                           (apa . "APA Style")
+                           (mla . "MLA Style")
+                           (ap . "AP Style")
+                           (bluebook . "Bluebook Style")
+                           (ama . "AMA Style")
+                           (nyt . "New York Times Style")
+                           (wikipedia . "Wikipedia Style")
+                           (sentence . "Sentence style"))
+         "Available styles for title-casing.")
+
 (defcustom titlecase-style 'chicago
   "Which style to use when title-casing."
-  :type '(choice (const :tag "Chicago Style" chicago)
-                 (const :tag "APA Style" apa)
-                 (const :tag "MLA Style" mla)
-                 (const :tag "AP Style" ap)
-                 (const :tag "Bluebook Style" bluebook)
-                 (const :tag "AMA Style" ama)
-                 (const :tag "New York Times Style" nyt)
-                 (const :tag "Wikipedia Style" wikipedia)
-                 (const :tag "Sentence style" sentence)))
+  :type (cons 'choice (cl-loop
+                       for style in titlecase-styles
+                       collect (list 'const :tag (cdr style) (car style))
+                       into choices
+                       finally return choices)))
 
 (defcustom titlecase-default-case-function #'capitalize-word
   "What to do to a word when a style doesn't specify what to do."
@@ -250,7 +258,8 @@ for docs on BEGIN, END and STYLE."
 
 (defun titlecase-region-with-style (begin end style)
   "Title-case the region of English text from BEGIN to END, using STYLE."
-  (interactive "*r")
+  ;; It doesn't makes sense for this function to be interactive;
+  ;; `titlecase-region' can now specify a style interactively.
   (save-excursion
     (save-match-data
       (while (< begin end)
@@ -263,12 +272,29 @@ for docs on BEGIN, END and STYLE."
           (titlecase--region-with-style-impl begin end-step style)
           (setq begin end-step))))))
 
+(defun titlecase--read-style ()
+  "Read which title-case style to use from the minibuffer."
+  (let ((choice (completing-read
+                 "Title-case style: "
+                 (mapcar #'cdr titlecase-styles)
+                 nil t nil nil
+                 (alist-get titlecase-style titlecase-styles))))
+    (cl-loop for (s . n) in titlecase-styles
+             if (equal n choice) return s)))
+
 ;;;###autoload
-(defun titlecase-region (begin end)
+(defun titlecase-region (begin end &optional style interactivep)
   "Title-case the region of English text from BEGIN to END.
-Uses the style provided in `titlecase-style'."
-  (interactive "*r")
-  (titlecase-region-with-style begin end titlecase-style))
+Uses the style provided in `titlecase-style', unless optional
+STYLE is provided.
+
+When called interactively, \\[universal-argument] \\[titlecase-region]
+will prompt the user for the style to use."
+  (interactive "*r\ni\nP")
+  (let ((style (or style
+                   (and interactivep (titlecase--read-style))
+                   titlecase-style)))
+    (titlecase-region-with-style begin end style)))
 
 ;;;###autoload
 (defun titlecase-dwim ()
@@ -277,6 +303,22 @@ Uses the style provided in `titlecase-style'."
   (if (region-active-p)
       (titlecase-region (region-beginning) (region-end))
     (titlecase-region (point-at-bol) (point-at-eol))))
+
+;;;###autoload
+(defun titlecase-dwim (&optional style interactive)
+  "Title-case either the region, if active, or the current line.
+Uses the style provided in `titlecase-style', unless optional
+STYLE is provided.
+
+When called interactively with \\[universal-argument] \\[titlecase-dwim],
+prompt the user for the style to use."
+  (interactive "i\nP")
+  (let ((style (or style
+                   (and interactivep (titlecase--read-style))
+                   titlecase-style)))
+    (if (region-active-p)
+              (titlecase-region (region-beginning) (region-end) style)
+            (titlecase-line style))))
 
 (provide 'titlecase)
 ;;; titlecase.el ends here
