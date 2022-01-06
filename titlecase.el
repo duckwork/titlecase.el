@@ -171,7 +171,7 @@
   "Title-case implementation.
 `titlecase-force-cap-after-punc' must be handled by the caller.
 This is expected to have run in a block that uses `save-excursion' and
-`save-match-data'.  See documentation for `titlecase-region-with-style'
+`save-match-data'.  See documentation for `titlecase--region-with-style'
 for docs on BEGIN, END and STYLE."
   (let ( ;; Constants during this function's runtime.
         (case-fold-search nil)
@@ -256,7 +256,7 @@ for docs on BEGIN, END and STYLE."
       (when (>= (point) begin)
         (capitalize-word 1)))))
 
-(defun titlecase-region-with-style (begin end style)
+(defun titlecase--region-with-style (begin end style)
   "Title-case the region of English text from BEGIN to END, using STYLE."
   ;; It doesn't makes sense for this function to be interactive;
   ;; `titlecase-region' can now specify a style interactively.
@@ -301,7 +301,7 @@ When called interactively, \\[universal-argument] \\[titlecase-region]
 will prompt the user for the style to use."
   (interactive "*r\ni\nP")
   (let ((style (titlecase--arg style interactivep)))
-    (titlecase-region-with-style begin end style)))
+    (titlecase--region-with-style begin end style)))
 
 ;;;###autoload
 (defun titlecase-line (&optional point style interactivep)
