@@ -213,8 +213,9 @@ fall-back, use `titlecase-style'."
 Uses the style provided in `titlecase-style', unless optional
 STYLE is provided.
 
-When called interactively, \\[universal-argument] \\[titlecase-region]
-will prompt the user for the style to use."
+When called interactively , or when INTERACTIVEP is non-nil,
+\\[universal-argument] \\[titlecase-region] will prompt the user
+for the style to use."
   (interactive "*r\ni\nP")
   (let ((style (titlecase--arg style interactivep)))
     (titlecase--region-with-style begin end style)))
@@ -225,9 +226,10 @@ will prompt the user for the style to use."
 Uses the style provided in `titlecase-style', unless optional
 STYLE is provided.
 
-When called interactively, POINT is the current point, and
-calling with \\[universal-argument] \\[titlecase-line] will
-prompt the user for the style to use."
+When called interactively , or when INTERACTIVEP is non-nil,
+POINT is the current point, and calling with
+\\[universal-argument] \\[titlecase-line] will prompt the user
+for the style to use."
   (interactive "d\ni\nP")
   (let ((style (titlecase--arg style interactivep)))
     (save-excursion
@@ -240,9 +242,10 @@ prompt the user for the style to use."
 Uses the style provided in `titlecase-style', unless optional
 STYLE is provided.
 
-When called interactively, POINT is the current point, and
-calling with \\[universal-argument] \\[titlecase-sentence] will
-prompt the user for the style to use."
+When called interactively , or when INTERACTIVEP is non-nil,
+POINT is the current point, and calling with
+\\[universal-argument] \\[titlecase-sentence] will prompt the
+user for the style to use."
   (interactive "d\ni\nP")
   (let ((style (titlecase--arg style interactivep)))
     (save-excursion
@@ -254,13 +257,14 @@ prompt the user for the style to use."
                         style))))
 
 ;;;###autoload
-(defun titlecase-dwim (&optional style interactive)
+(defun titlecase-dwim (&optional style interactivep)
   "Title-case either the region, if active, or the current line.
 Uses the style provided in `titlecase-style', unless optional
 STYLE is provided.
 
-When called interactively with \\[universal-argument] \\[titlecase-dwim],
-prompt the user for the style to use."
+When called interactively with \\[universal-argument]
+\\[titlecase-dwim], or when INTERACTIVEP is non-nil, prompt the
+user for the style to use."
   (interactive "i\nP")
   (let ((style (titlecase--arg style interactivep)))
     (if (region-active-p)

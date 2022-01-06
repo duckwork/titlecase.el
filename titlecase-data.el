@@ -106,6 +106,8 @@
 
 ;;; Code:
 
+(require 'seq)
+
 (defvar titlecase-prepositions
   ;; This was pulled from Wikipedia, and so is somewhat weird.
   ;; https://en.wikipedia.org/wiki/List_of_English_prepositions
