@@ -66,7 +66,7 @@
 (defvar titlecase-default-case-function #'capitalize-word
   "What to do to a word when a style doesn't specify what to do.")
 
-(defcustom titlecase-style 'chicago
+(defcustom titlecase-style 'wikipedia
   "Which style to use when title-casing."
   :type (cons 'choice (cl-loop
                        for style in titlecase-styles
