@@ -70,9 +70,9 @@
 (defmacro ert-deftest-decl-geneated-ascii (test-id pass len seed)
   `(ert-deftest-decl-geneated-data-char-range ,test-id ,pass ,len ,seed 128))
 
-;; FIXME: can cause bugs, these look to be errors in emacs it's self.
+;; FIXME: can cause bugs, these look to be errors in Emacs itself.
 (defmacro ert-deftest-decl-geneated-unicode (test-id pass len seed)
-  ;; See emacs's own: MAX_CHAR = 0x3FFFFF = 4194303 (inclusive).
+  ;; See Emacs's own: MAX_CHAR = 0x3FFFFF = 4194303 (inclusive).
   `(ert-deftest-decl-geneated-data-char-range ,test-id ,pass ,len ,seed 4194303))
 
 ;; ---------------------------------------------------------------------------
