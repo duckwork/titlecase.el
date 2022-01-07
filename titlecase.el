@@ -74,7 +74,7 @@
                        into choices
                        finally return choices)))
 
-(defcustom titlecase-force-cap-after-punc "[.?!\\/;\\:\n\r]"
+(defcustom titlecase-force-cap-after-punc "[.?!\\/;:\n\r]"
   "Regexp to force the next word capitalized."
   :type 'regexp)
 
