@@ -44,9 +44,33 @@ the best efforts to keep with well-accepted title-casing styles.
 - ~titlecase-dwim-non-region-function~ :: What function to call when
   ~titlecase-dwim~ doesn't operate on a region of text.  ~titlecase-line~ and
   ~titlecase-sentence~ are good choices, but this can be any function.
+
 - ~titlecase-force-cap-after-punc~ :: This is a regular expression that will force
   the next word in the title to be capitalized.  It defaults to the common
   punctuation marks of all the styles.
+
+- ~titlecase-command~ :: What command to use for title-casing logic.  It can be a
+  function, a string, or a list of strings.
+
+  + Function (default: ~titlecase--region-with-style~) :: An Emacs Lisp function
+    will be called with three arguments: the beginning and end of the region to
+    title-case, and the desired style as a symbol.
+
+  + String :: A string will be interpreted as the path to an external shell
+    command.  The text to title-case will be passed to this command as standard
+    input, and replaced with the command's standard output.  If the command
+    fails for some reason, the bell will ring and the text will remain
+    unchanged.
+
+  + List of strings :: If you have a complex command-line to title-case a
+    string, you can pass a list of strings of the form
+    #+begin_src emacs-lisp
+      ("<COMMAND>" ["<ARG>" 'style]...)
+    #+end_src
+    where =<COMMAND>= is the name of the command, and the rest of the list is
+    either =<ARG>= command-line arguments or the symbol =style=, which will be
+    replaced by the requested style of title capitalization.
+
 - ~titlecase-style~ :: The style of title-casing to use.  See Notes.md for a
   longer discussion of how hard title-casing can be.  As of this writing, the
   following styles are available:
@@ -79,10 +103,21 @@ the best efforts to keep with well-accepted title-casing styles.
 Title-casing has been attempted before in Emacs:
 
 - [[https://jblevins.org/log/titlecase][Title Case in Emacs]], Jason Blevins
+
+  Jason actually wrote another ~titlecase.el~
+  that shells out to a [[https://github.com/ap/titlecase][Perl program by John Gruber and Aristotle Pagaltzis]].
+  Users of Jason's ~titlecase.el~ should be able to use this one with no changes,
+  aside from changing the value of ~titlecase-command~ from the new default to
+  ~"titlecase"~.
+
 - [[http://xahlee.info/emacs/emacs/elisp_title_case_text.html][Emacs: Change to Title Case]], Xah Lee
+
 - [[https://karl-voit.at/2015/05/25/elisp-title-capitalization/][Implementing Proper English Title Capitalization With Emacs Elisp]], Karl Voit
+
 - [[https://github.com/yuutayamada/auto-capitalize-el][auto-capitalize.el]], Yuta Yamada
+
 - [[https://hungyi.net/posts/programmers-way-to-title-case/][The Programmer's Way to Write in Title Case Using Emacs Lisp]], Hung Yi
+
 - and I'm sure others
 
 This package aims to be different by being more comprehensive and providing
