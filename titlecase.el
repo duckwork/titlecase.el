@@ -41,10 +41,16 @@
 ;; `titlecase-dwim-non-region-function', which determines what to do when
 ;; `titlecase-dwim' isn't acting on a region.
 
+;; If you want to use your own title-casing code, or a third party, you can
+;; customize `titlecase-command' to something other than its default.  One
+;; possibility is titlecase.pl, written John Gruber and Aristotle Pagaltzis:
+;; https://github.com/ap/titlecase.
+
 ;;; Code:
 
 (require 'cl-lib)
 (require 'seq)
+(require 'thingatpt)
 (require 'titlecase-data)
 
 (defgroup titlecase nil
@@ -82,6 +88,23 @@
   "What to do with `titlecase-dwim' when region isn't active.
 Recommended: `titlecase-line' or `titlecase-sentence'."
   :type 'function)
+
+(defcustom titlecase-command #'titlecase--region-with-style
+  "Command to use for titlecasing titles.
+This option can be one of two things:
+
+A string value, or a list of string values, is interpreted as a
+system command to run using `call-process-region' on a temp
+buffer containing the text to titlecase.  Just a string is
+interpreted as the command to run, with no arguments.  A list of
+strings will pass those strings as aruguments to the command-line
+program.  In that list, the symbol `style' will be replaced with
+the the string of the title-casing style that's passed.
+
+A function value is interpreted as the function to call on the
+region.  The function will be called with three arguments: the
+beginning and end of the region, and the style (see
+`titlecase-style') to capitalize it in.")
 
 (defun titlecase--region-with-style-impl (begin end style)
   "Title-case implementation.
@@ -207,6 +230,34 @@ fall-back, use `titlecase-style'."
       (and interactivep (titlecase--read-style))
       titlecase-style))
 
+(defun titlecase--string (str style)
+  "Run `titlecase-command' on STR with STYLE and return the result.
+See the docstring for `titlecase-command' for its possible
+values."
+  (let (;; Remember the existing newlines
+        (str-ending-newlines (replace-regexp-in-string
+                              "\\`\\([^z-a]*?\\)\n*\\'" "" str nil nil 1)))
+    (with-temp-buffer
+      (insert str)
+      (cond
+       ((stringp titlecase-command)
+        (call-process-region (point-min) (point-max) titlecase-command t t nil))
+       ((listp titlecase-command)
+        (apply #'call-process-region (point-min) (point-max)
+               (car titlecase-command) t t nil
+               (mapcar (lambda (s)
+                         (format "%s" (if (eq s 'style) titlecase-style s)))
+                       (cdr titlecase-command))))
+       ((functionp titlecase-command)
+        (funcall titlecase-command (point-min) (point-max) style)))
+      ;; Ensure that the string has no extra trailing whitespace.
+      (goto-char (point-max))            ; Go to the end of the buffer
+      (newline)                          ; Ensure at least one newline
+      (delete-blank-lines)               ; Delete all but the last newline
+      (insert str-ending-newlines)       ; Replace the pre-existing newlines
+      ;; Delete the extra newline and return the buffer as a string
+      (buffer-substring (point-min) (1- (point-max))))))
+
 ;;;###autoload
 (defun titlecase-region (begin end &optional style interactivep)
   "Title-case the region of English text from BEGIN to END.
@@ -217,8 +268,11 @@ When called interactively , or when INTERACTIVEP is non-nil,
 \\[universal-argument] \\[titlecase-region] will prompt the user
 for the style to use."
   (interactive "*r\ni\nP")
-  (let ((style (titlecase--arg style interactivep)))
-    (titlecase--region-with-style begin end style)))
+  (atomic-change-group
+    (let ((pt (point))
+          (style (titlecase--arg style interactivep)))
+      (insert (titlecase--string (delete-and-extract-region begin end) style))
+      (goto-char pt))))
 
 ;;;###autoload
 (defun titlecase-line (&optional point style interactivep)
@@ -231,10 +285,11 @@ POINT is the current point, and calling with
 \\[universal-argument] \\[titlecase-line] will prompt the user
 for the style to use."
   (interactive "d\ni\nP")
-  (let ((style (titlecase--arg style interactivep)))
-    (save-excursion
-      (goto-char point)
-      (titlecase-region (line-beginning-position) (line-end-position) style))))
+  (goto-char point)
+  (let ((style (titlecase--arg style interactivep))
+        (thing (bounds-of-thing-at-point 'line)))
+    (titlecase-region (car thing) (cdr thing) style)
+    (goto-char (1- (cdr thing)))))
 
 ;;;###autoload
 (defun titlecase-sentence (&optional point style interactivep)
@@ -247,14 +302,11 @@ POINT is the current point, and calling with
 \\[universal-argument] \\[titlecase-sentence] will prompt the
 user for the style to use."
   (interactive "d\ni\nP")
-  (let ((style (titlecase--arg style interactivep)))
-    (save-excursion
-      (goto-char point)
-      (titlecase-region (progn (backward-sentence)
-                               (point))
-                        (progn (forward-sentence)
-                               (point))
-                        style))))
+  (goto-char point)
+  (let ((style (titlecase--arg style interactivep))
+        (thing (bounds-of-thing-at-point 'sentence)))
+    (titlecase-region (car thing) (cdr thing) style)
+    (goto-char (cdr thing))))
 
 ;;;###autoload
 (defun titlecase-dwim (&optional style interactivep)
