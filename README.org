@@ -12,12 +12,13 @@ capitalizing headings a little easier.  Thus, ~titlecase~ is the best-effort
 attempt at capitalizing titles, in English, in Emacs.
 
 /By no means is this a panacea!/ Make sure to copy-edit your writing before you
+
 publish it.  Remember, computers are stupid.
 
 * Installation
 
 Make sure both titlecase.el and titlecase-data.el are in your ~load-path~,
-and =require= as per usual.  If you use a package manager like =package.el= or
+and ~require~ as per usual.  If you use a package manager like =package.el= or
 =straight.el=, that should be done for you.
 
 Note that you will need a package manager that can pull from arbitrary git
@@ -71,7 +72,7 @@ the best efforts to keep with well-accepted title-casing styles.
       ("<COMMAND>" ["<ARG>" 'style]...)
     #+end_src
     where =<COMMAND>= is the name of the command, and the rest of the list is
-    either =<ARG>= command-line arguments or the symbol =style=, which will be
+    either =<ARG>= command-line arguments or the symbol ~style~, which will be
     replaced by the requested style of title capitalization.
 
 - ~titlecase-style~ :: The style of title-casing to use.  See Notes.md for a
@@ -106,13 +107,13 @@ the best efforts to keep with well-accepted title-casing styles.
 *** [[https://github.com/oantolin/embark][Embark]]
 
 Omar Antolin's excellent Embark package works well with =titlecase=.  You can bind
-=titlecase-line= to =embark-heading-map=:
+~titlecase-line~ to ~embark-heading-map~:
 
 #+begin_src emacs-lisp
   (define-key embark-heading-map "t" #'titlecase-line)
 #+end_src
 
-Or you can bind =titlecase-region= to =embark-region-map=:
+Or you can bind ~titlecase-region~ to ~embark-region-map~:
 
 #+begin_src emacs-lisp
   (define-key embark-region-map "t" #'titlecase-region)
@@ -149,7 +150,7 @@ capitalization rules:
 - [[https://capitalizemytitle.com/][Capitalize My Title]]
 - and others, including those linked in the comments to [[https://old.reddit.com/r/emacs/comments/r1flpw/proper_english_title_case/][this Reddit post]].
 
-There is an [[https://github.com/duckwork/titlecase.el/issues/6][open issue]] to add a =titlecase-endpoint= function to this package,
+There is an [[https://github.com/duckwork/titlecase.el/issues/6][open issue]] to add a ~titlecase-endpoint~ function to this package,
 so if web-based title-casing is your bag, please contribute!
 
 * Contributing & Hacking

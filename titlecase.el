@@ -48,9 +48,10 @@
 
 ;;; Code:
 
-(require 'cl-lib)
-(require 'seq)
-(require 'thingatpt)
+(require 'browse-url)                   ; `browse-url-button-regexp'
+(require 'cl-lib)                       ; `cl-loop'
+(require 'seq)                          ; `seq-some'
+(require 'thingatpt)                    ; `bounds-of-thing-at-point'
 (require 'titlecase-data)
 
 (defgroup titlecase nil
@@ -67,7 +68,7 @@
                            (nyt . "New York Times Style")
                            (wikipedia . "Wikipedia Style")
                            (sentence . "Sentence style"))
-         "Available styles for title-casing.")
+  "Available styles for title-casing.")
 
 (defvar titlecase-default-case-function #'capitalize-word
   "What to do to a word when a style doesn't specify what to do.")
@@ -320,7 +321,7 @@ user for the style to use."
   (interactive "i\nP")
   (let ((style (titlecase--arg style interactivep)))
     (if (region-active-p)
-              (titlecase-region (region-beginning) (region-end) style)
+        (titlecase-region (region-beginning) (region-end) style)
       (funcall titlecase-dwim-non-region-function (point) style))))
 
 (provide 'titlecase)
