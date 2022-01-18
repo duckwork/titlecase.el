@@ -1,6 +1,9 @@
 #+TITLE: Titlecase.el
 #+AUTHOR: Case Duckworth
 
+[[https://melpa.org/#/titlecase][file:https://melpa.org/packages/titlecase-badge.svg]]
+[[https://stable.melpa.org/#/titlecase][file:https://stable.melpa.org/packages/titlecase-badge.svg]]
+
 It turns out, capitalizing titles is Hard.  This library only does it in
 English, and even then, it's pretty jankily put-together.  It's due, mostly,
 to the fact that many words can mean many different things, depending, and I
