@@ -159,7 +159,8 @@ To add another style to ~titlecase-styles~, you'll want to look at ~titlecase-da
 ** Thanks
 
 Big /big/ thanks to [[https://github.com/ideasman42][ideasman42]], for all of your testing and ideas.  I really
-appreciate it!
+appreciate it!  Thanks also to everyone who's contributed issues, code, and
+suggestions to this package.
 
 * License
 
