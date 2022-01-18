@@ -81,6 +81,22 @@ title-casing style.  They are called one after another in order
 in a `save-excursion' block."
   :type '(repeat function))
 
+(defcustom titlecase-skip-words-regexps (list "\\b[[:upper:]]+\\b"
+                                              browse-url-button-regexp)
+  "Regexps of words to skip when titlecasing.
+Each regexp in this list will be tested on each word considered
+for title-casing, and if the regexp matches the entire word, the
+word will be skipped.
+
+NOTE: These regexps will be matched against the title-cased
+region /after/ normalizing it, which means that, by default, if
+the region is in all-caps before calling `titlecase-region', it
+will be downcased before title-casing.  Thus, some of these
+regexps might not match when expected.  This behavior is a
+trade-off between possible user expectations.  To change this
+behavior, customize `titlecase-normalize-functions'."
+  :type '(repeat regexp))
+
 (defcustom titlecase-style 'wikipedia
   "Which style to use when title-casing."
   :type (cons 'choice (cl-loop
@@ -141,70 +157,79 @@ for docs on BEGIN, END and STYLE."
     (setq begin (point))
 
     ;; And loop over the rest.
-    (while (< (point) end)
-      (let ((this-word (current-word)))
-        (cond
-         ;; Skip ALL-CAPS words.
-         ((string-match-p "^[[:upper:]]+$" this-word)
-          (forward-word 1))
-         ;; Phrasal verbs!
-         ((and (memq style titlecase-styles-capitalize-phrasal-verbs)
-               (member (downcase this-word)
-                       (mapcar #'car titlecase-phrasal-verbs)))
-          ;; We need to do a little state machine thingy here.
-          (let ((next-words (assoc this-word titlecase-phrasal-verbs))
-                (bail-pt (point)))
-            ;; Take care of the first word --- this is inelegant.
-            (capitalize-word 1)
-            (skip-syntax-forward "^w" end)
-            (setq this-word (current-word))
-            ;; Loop through the rest
-            (while (and this-word (member (downcase this-word)
-                                          (mapcar #'car-safe next-words)))
+    (catch :done
+      (while (< (point) end)
+        (let ((this-word (current-word)))
+          (cond
+           ;; Skip words matching `titlecase-skip-words-regexps'.
+           ((looking-at (format "%s"
+                                (mapconcat #'identity
+                                           titlecase-skip-words-regexps
+                                           "\\|")))
+            (goto-char (match-end 0))
+            ;; TODO: Document what this does (it's late)
+            (when (>= (point) end)
+              (throw :done 'skipped)))
+           ;; Phrasal verbs!
+           ((and (memq style titlecase-styles-capitalize-phrasal-verbs)
+                 (member (downcase this-word)
+                         (mapcar #'car titlecase-phrasal-verbs)))
+            ;; We need to do a little state machine thingy here.
+            (let ((next-words (assoc this-word titlecase-phrasal-verbs))
+                  (bail-pt (point)))
+              ;; Take care of the first word --- this is inelegant.
               (capitalize-word 1)
               (skip-syntax-forward "^w" end)
-              (setq this-word (current-word)
-                    next-words (mapcar #'cdr-safe next-words)))
-            (unless (seq-some 'null next-words)
-              ;; If it's not a phrasal verb, bail --- but still capitalize the
-              ;; first word!
-              (downcase-region bail-pt (point))
-              (goto-char bail-pt)
-              (capitalize-word 1))))
-         ;; Force capitalization if this is the first word.
-         ((eq begin (point))
-          (capitalize-word 1))
-         ;; AP capitalizes /all/ words longer than 3 letters.
-         ((and (memq style titlecase-styles-capitalize-non-short-words)
-               (> (length this-word) titlecase-short-word-length))
-          (capitalize-word 1))
-         ;; Skip the next word if:
-         ((or
-           ;; Sentence style just capitalizes the first word.  Since we can't
-           ;; be sure how the user has already capitalized anything, we just
-           ;; skip the current word.
-           (eq style 'sentence)
-           ;; None of the styles require a capital letter after an apostrophe.
-           (eq (char-before (point)) ?')
-           ;; FIXME: Hyphens are a completely different story with
-           ;; capitalization.
-           (eq (char-before (point)) ?-))
-          (forward-word 1))
-         ;; Down-case words that should be.
-         ((member (downcase this-word) downcase-word-list)
-          (downcase-word 1))
-         ;; Otherwise, do the default function on the word.
-         (t
-          (funcall titlecase-default-case-function 1))))
+              (setq this-word (current-word))
+              ;; Loop through the rest
+              (while (and this-word
+                          (member (downcase this-word)
+                                  (mapcar #'car-safe next-words)))
+                (capitalize-word 1)
+                (skip-syntax-forward "^w" end)
+                (setq this-word (current-word)
+                      next-words (mapcar #'cdr-safe next-words)))
+              (unless (seq-some #'null next-words)
+                ;; If it's not a phrasal verb, bail --- but still
+                ;; capitalize the first word!
+                (downcase-region bail-pt (point))
+                (goto-char bail-pt)
+                (capitalize-word 1))))
+           ;; Force capitalization if this is the first word.
+           ((eq begin (point))
+            (capitalize-word 1))
+           ;; AP capitalizes /all/ words longer than 3 letters.
+           ((and (memq style titlecase-styles-capitalize-non-short-words)
+                 (> (length this-word) titlecase-short-word-length))
+            (capitalize-word 1))
+           ;; Skip the next word if:
+           ((or
+             ;; Sentence style just capitalizes the first word.  Since we
+             ;; can't be sure how the user has already capitalized
+             ;; anything, we just skip the current word.
+             (eq style 'sentence)
+             ;; None of the styles require a capital letter after an
+             ;; apostrophe.
+             (eq (char-before (point)) ?')
+             ;; FIXME: Hyphens are a completely different story with
+             ;; capitalization.
+             (eq (char-before (point)) ?-))
+            (forward-word 1))
+           ;; Down-case words that should be.
+           ((member (downcase this-word) downcase-word-list)
+            (downcase-word 1))
+           ;; Otherwise, do the default function on the word.
+           (t
+            (funcall titlecase-default-case-function 1))))
 
-      ;; Step over the loop.
-      (skip-syntax-forward "^w" end))
-
-    ;; Capitalize the last word, only in some styles.
-    (when (memq style titlecase-styles-capitalize-last-word)
-      (backward-word 1)
-      (when (>= (point) begin)
-        (capitalize-word 1)))))
+        ;; Step over the loop.
+        (skip-syntax-forward "^w" end))
+      ;; Capitalize the last word, only in some styles and some conditions.
+      (when (and (memq style titlecase-styles-capitalize-last-word))
+        (save-excursion
+          (backward-word 1)
+          (when (>= (point) begin)
+            (capitalize-word 1)))))))
 
 (defun titlecase--region-with-style (begin end style)
   "Title-case the region of English text from BEGIN to END, using STYLE."
@@ -219,8 +244,10 @@ for docs on BEGIN, END and STYLE."
                                       end :noerror)
                    (point)
                  end)))
-          (titlecase--region-with-style-impl begin end-step style)
-          (setq begin end-step))))))
+          (if (memq (titlecase--region-with-style-impl begin end-step style)
+                    '(skipped))
+              (setq begin (point))
+            (setq begin end-step)))))))
 
 (defun titlecase--read-style ()
   "Read which title-case style to use from the minibuffer."
