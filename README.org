@@ -82,12 +82,10 @@ the best efforts to keep with well-accepted title-casing styles.
 
   + List of strings :: If you have a complex command-line to title-case a
     string, you can pass a list of strings of the form
-    #+begin_src emacs-lisp
-      ("<COMMAND>" ["<ARG>" 'style]...)
-    #+end_src
-    where =<COMMAND>= is the name of the command, and the rest of the list is
-    either =<ARG>= command-line arguments or the symbol ~style~, which will be
-    replaced by the requested style of title capitalization.
+    ~("<COMMAND>" ["<ARG>" 'style]...)~ where =<COMMAND>= is the name of the
+    command, and the rest of the list is either =<ARG>= command-line arguments or
+    the symbol ~style~, which will be replaced by the requested style of title
+    capitalization.
 
 - ~titlecase-style~ :: The style of title-casing to use.  See Notes.md for a
   longer discussion of how hard title-casing can be.  As of this writing, the
