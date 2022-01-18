@@ -149,6 +149,9 @@ capitalization rules:
 - [[https://capitalizemytitle.com/][Capitalize My Title]]
 - and others, including those linked in the comments to [[https://old.reddit.com/r/emacs/comments/r1flpw/proper_english_title_case/][this Reddit post]].
 
+There is an [[https://github.com/duckwork/titlecase.el/issues/6][open issue]] to add a =titlecase-endpoint= function to this package,
+so if web-based title-casing is your bag, please contribute!
+
 * Contributing & Hacking
 
 /Please/ contribute!  This is a herculean effort, so feel free to open issues,
