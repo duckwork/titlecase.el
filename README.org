@@ -53,6 +53,20 @@ the best efforts to keep with well-accepted title-casing styles.
   the next word in the title to be capitalized.  It defaults to the common
   punctuation marks of all the styles.
 
+- ~titlecase-normalize-functions~ :: A list of functions to call before
+  title-casing a region in order to normalize its text.  The default value
+  converts a region in ALL-CAPS to lowercase before processing, but you could
+  set this variable to =nil= to avoid that, or even add more pre-processing
+  functions.
+
+- ~titlecase-skip-words-regexps~ :: A list of regexps to skip completely when
+  title-casing.  Defaults to words in all-capitals and URLs (as defined by
+  =browse-url-button-regexp=).  Of course, all-capital words in an all-capital
+  region will be downcased in the default normalization step, but of course you
+  can add whatever you want to this list and ~titlecase-normalize-functions~ to
+  remedy that.  These regexps are combined by separating them with ~\|~ in the
+  implementation.
+
 - ~titlecase-command~ :: What command to use for title-casing logic.  It can be a
   function, a string, or a list of strings.
 
