@@ -46,6 +46,24 @@
 ;; possibility is titlecase.pl, written John Gruber and Aristotle Pagaltzis:
 ;; https://github.com/ap/titlecase.
 
+;;; Pre-code:
+
+;; Due to an older `titlecase' package, users might have a separate `titlecase'
+;; feature in their Emacs system.  For more details, see the discussion at
+;; https://github.com/melpa/melpa/pull/7852, but suffice it to say that before
+;; loading any other of the code in this module we want to warn the user if the
+;; other `titlecase' is somehow detected.
+
+(when (and (or (featurep 'titlecase)
+               (boundp 'titlecase-command))
+           (not (bound-and-true-p titlecase--loaded)))
+  (display-warning 'titlecase
+                   (concat "It appears as though you might be using a"
+                           " different version of `titlecase'.  While"
+                           " this package should still work, consider"
+                           " ensuring only one `titlecase' package is"
+                           " loaded.")))
+
 ;;; Code:
 
 (require 'cl-lib)
@@ -324,4 +342,7 @@ user for the style to use."
       (funcall titlecase-dwim-non-region-function (point) style))))
 
 (provide 'titlecase)
+;; This variable definition needs to be at the very end of this file for the
+;; "Pre-code" section at the top.
+(defvar titlecase--loaded t "Whether this `titlecase' has been loaded.")
 ;;; titlecase.el ends here
