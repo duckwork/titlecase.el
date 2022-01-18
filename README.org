@@ -101,6 +101,23 @@ the best efforts to keep with well-accepted title-casing styles.
     sentence style will still capitalize words after
     ~titlecase-force-cap-after-punc~ characters.
 
+** Integration with other packages
+
+*** [[https://github.com/oantolin/embark][Embark]]
+
+Omar Antolin's excellent Embark package works well with =titlecase=.  You can bind
+=titlecase-line= to =embark-heading-map=:
+
+#+begin_src emacs-lisp
+  (define-key embark-heading-map "t" #'titlecase-line)
+#+end_src
+
+Or you can bind =titlecase-region= to =embark-region-map=:
+
+#+begin_src emacs-lisp
+  (define-key embark-region-map "t" #'titlecase-region)
+#+end_src
+
 * References & Prior Art
 
 Title-casing has been attempted before in Emacs:
