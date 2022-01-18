@@ -73,6 +73,14 @@
 (defvar titlecase-default-case-function #'capitalize-word
   "What to do to a word when a style doesn't specify what to do.")
 
+(defcustom titlecase-normalize-functions '(titlecase--lowercase-all-caps)
+  "List of functions for normalizing input before title-casing.
+Each function will be passed 3 arguments: the beginning and
+ending points of the region to operate on, as well as the
+title-casing style.  They are called one after another in order
+in a `save-excursion' block."
+  :type '(repeat function))
+
 (defcustom titlecase-style 'wikipedia
   "Which style to use when title-casing."
   :type (cons 'choice (cl-loop
@@ -119,9 +127,11 @@ for docs on BEGIN, END and STYLE."
                              (intern (format "titlecase-lowercase-%s"
                                              style)))))
 
-    ;; If the region is in ALL-CAPS, normalize it first.
-    (unless (re-search-forward "[[:lower:]]" end :noerror)
-      (downcase-region begin end))
+    ;; Normalize the text in region by calling `titlecase-normalize-functions'
+    ;; in order.
+    (dolist (fn titlecase-normalize-functions)
+      (save-excursion
+        (funcall fn begin end style)))
 
     ;; Skip blank lines & white-space (where `current-word' would return nil).
     ;; It's important this uses the same logic that `current-word' uses to scan
@@ -258,6 +268,12 @@ values."
       (insert str-ending-newlines)       ; Replace the pre-existing newlines
       ;; Delete the extra newline and return the buffer as a string
       (buffer-substring (point-min) (1- (point-max))))))
+
+(defun titlecase--lowercase-all-caps (begin end _style)
+  "If the text from BEGIN to END is all-caps, downcase it."
+  (goto-char begin)
+  (unless (re-search-forward "[[:lower:]]" end :noerror)
+    (downcase-region begin end)))
 
 ;;;###autoload
 (defun titlecase-region (begin end &optional style interactivep)
