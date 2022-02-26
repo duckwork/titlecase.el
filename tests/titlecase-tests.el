@@ -105,6 +105,10 @@
  "don't work"
  "Don't Work")
 (ert-deftest-decl-pair
+ apostrophe_2
+ "don’t work"
+ "Don’t Work")
+(ert-deftest-decl-pair
  non_ascii_single_1 ;; See issue #1.
  "π"
  "Π")
