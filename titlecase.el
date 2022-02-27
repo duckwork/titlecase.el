@@ -210,8 +210,7 @@ for docs on BEGIN, END and STYLE."
              (eq style 'sentence)
              ;; None of the styles require a capital letter after an
              ;; apostrophe.
-             (eq (char-before (point)) ?')
-             (eq (char-before (point)) ?’)
+             (memq (char-before (point)) '(?' ?’))
              ;; FIXME: Hyphens are a completely different story with
              ;; capitalization.
              (eq (char-before (point)) ?-))
