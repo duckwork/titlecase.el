@@ -223,12 +223,15 @@ for docs on BEGIN, END and STYLE."
             (funcall titlecase-default-case-function 1))))
 
         ;; Step over the loop.
-        (skip-syntax-forward "^w" end))
+        (unless (= end (point))
+          (skip-syntax-forward "^w" end)))
       ;; Capitalize the last word, only in some styles and some conditions.
       (when (and (memq style titlecase-styles-capitalize-last-word))
         (save-excursion
           (backward-word 1)
-          (when (>= (point) begin)
+          (when (and (>= (point) begin)
+                     (not (seq-some (lambda (r) (looking-at r))
+                                    titlecase-skip-words-regexps)))
             (capitalize-word 1)))))))
 
 (defun titlecase--region-with-style (begin end style)
