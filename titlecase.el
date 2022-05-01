@@ -131,6 +131,13 @@ region.  The function will be called with three arguments: the
 beginning and end of the region, and the style (see
 `titlecase-style') to capitalize it in.")
 
+(defcustom titlecase-downcase-sentences nil
+  "Whether to downcase words after the first in \"sentence\" style.
+If nil, titlecasing using the \"sentence\" style will leave all
+words as-is.  If t, \"sentence\"-style titlecasing will downcase
+words that don't begin a sentence."
+  :type 'boolean)
+
 (defun titlecase--region-with-style-impl (begin end style)
   "Title-case implementation.
 `titlecase-force-cap-after-punc' must be handled by the caller.
@@ -202,12 +209,15 @@ for docs on BEGIN, END and STYLE."
            ((and (memq style titlecase-styles-capitalize-non-short-words)
                  (> (length this-word) titlecase-short-word-length))
             (capitalize-word 1))
+           ;; Sentence style just capitalizes the first word.  Since we can't be
+           ;; sure how the user has already capitalized anything, we just skip
+           ;; the current word.  HOWEVER, there are times when downcasing the
+           ;; rest of the sentence is warranted.
+           ((and (eq style 'sentence)
+                 titlecase-downcase-sentences)
+            (downcase-word 1))
            ;; Skip the next word if:
            ((or
-             ;; Sentence style just capitalizes the first word.  Since we
-             ;; can't be sure how the user has already capitalized
-             ;; anything, we just skip the current word.
-             (eq style 'sentence)
              ;; None of the styles require a capital letter after an
              ;; apostrophe.
              (memq (char-before (point)) '(?' ?’))
