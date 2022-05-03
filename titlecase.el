@@ -248,19 +248,18 @@ for docs on BEGIN, END and STYLE."
   "Title-case the region of English text from BEGIN to END, using STYLE."
   ;; It doesn't makes sense for this function to be interactive;
   ;; `titlecase-region' can now specify a style interactively.
-  (save-excursion
-    (save-match-data
-      (while (< begin end)
-        (goto-char begin)
-        (let ((end-step
-               (if (re-search-forward titlecase-force-cap-after-punc
-                                      end :noerror)
-                   (point)
-                 end)))
-          (if (memq (titlecase--region-with-style-impl begin end-step style)
-                    '(skipped))
-              (setq begin (point))
-            (setq begin end-step)))))))
+  (save-match-data
+    (while (< begin end)
+      (goto-char begin)
+      (let ((end-step
+             (if (re-search-forward titlecase-force-cap-after-punc
+                                    end :noerror)
+                 (point)
+               end)))
+        (if (memq (titlecase--region-with-style-impl begin end-step style)
+                  '(skipped))
+            (setq begin (point))
+          (setq begin end-step))))))
 
 (defun titlecase--read-style ()
   "Read which title-case style to use from the minibuffer."
