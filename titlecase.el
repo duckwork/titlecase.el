@@ -344,8 +344,7 @@ for the style to use."
   (goto-char point)
   (let ((style (titlecase--arg style interactivep))
         (thing (bounds-of-thing-at-point 'line)))
-    (titlecase-region (car thing) (cdr thing) style)
-    (goto-char (1- (cdr thing)))))
+    (titlecase-region (car thing) (cdr thing) style)))
 
 ;;;###autoload
 (defun titlecase-sentence (&optional point style interactivep)
