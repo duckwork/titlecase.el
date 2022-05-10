@@ -212,10 +212,18 @@ for docs on BEGIN, END and STYLE."
            ;; Sentence style just capitalizes the first word.  Since we can't be
            ;; sure how the user has already capitalized anything, we just skip
            ;; the current word.  HOWEVER, there are times when downcasing the
-           ;; rest of the sentence is warranted.
-           ((and (eq style 'sentence)
-                 titlecase-downcase-sentences)
-            (downcase-word 1))
+           ;; rest of the sentence is warranted.  --- NOTE 2022-05-09: Now I'm
+           ;; thinking about it, does `sentence' style need to do anything
+           ;; whatsoever?  Maybe I just need to include a test toward the top of
+           ;; the enclosing function to make `titlecase-default-case-function'
+           ;; be `downcase-word' if `titlecase-downcase-sentences' is true... or
+           ;; something of that nature.  I might be over-engineering this, is
+           ;; what I'm saying.  Curious, isn't it?
+           ((eq style 'sentence)
+            (funcall (if titlecase-downcase-sentences
+                         #'downcase-word
+                       #'forward-word)
+                     1))
            ;; Skip the next word if:
            ((or
              ;; None of the styles require a capital letter after an
