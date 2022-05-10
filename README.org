@@ -12,7 +12,6 @@ capitalizing headings a little easier.  Thus, ~titlecase~ is the best-effort
 attempt at capitalizing titles, in English, in Emacs.
 
 /By no means is this a panacea!/ Make sure to copy-edit your writing before you
-
 publish it.  Remember, computers are stupid.
 
 * Installation
@@ -122,13 +121,13 @@ Omar Antolin's excellent Embark package works well with =titlecase=.  You can bi
 ~titlecase-line~ to ~embark-heading-map~:
 
 #+begin_src emacs-lisp
-  (define-key embark-heading-map "t" #'titlecase-line)
+  (define-key embark-heading-map "T" #'titlecase-line)
 #+end_src
 
 Or you can bind ~titlecase-region~ to ~embark-region-map~:
 
 #+begin_src emacs-lisp
-  (define-key embark-region-map "t" #'titlecase-region)
+  (define-key embark-region-map "T" #'titlecase-region)
 #+end_src
 
 * References & Prior Art
