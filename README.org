@@ -113,6 +113,10 @@ the best efforts to keep with well-accepted title-casing styles.
     sentence style will still capitalize words after
     ~titlecase-force-cap-after-punc~ characters.
 
+- ~titlecase-downcase-sentences~ :: When this option is set to ~t~, the
+  ~sentence~ style of titlecasing will downcase words past the first one.  The
+  default (~nil~) will leave everything past the first word alone.
+
 ** Integration with other packages
 
 *** [[https://github.com/oantolin/embark][Embark]]
