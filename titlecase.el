@@ -349,7 +349,7 @@ POINT is the current point, and calling with
 \\[universal-argument] \\[titlecase-line] will prompt the user
 for the style to use."
   (interactive "d\ni\nP")
-  (goto-char point)
+  (goto-char (or point (point)))
   (let ((style (titlecase--arg style interactivep))
         (thing (bounds-of-thing-at-point 'line)))
     (titlecase-region (car thing) (cdr thing) style)))
@@ -365,7 +365,7 @@ POINT is the current point, and calling with
 \\[universal-argument] \\[titlecase-sentence] will prompt the
 user for the style to use."
   (interactive "d\ni\nP")
-  (goto-char point)
+  (goto-char (or point (point)))
   (let ((style (titlecase--arg style interactivep))
         (thing (bounds-of-thing-at-point 'sentence)))
     (titlecase-region (car thing) (cdr thing) style)
