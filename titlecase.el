@@ -132,6 +132,13 @@ region.  The function will be called with three arguments: the
 beginning and end of the region, and the style (see
 `titlecase-style') to capitalize it in.")
 
+(defcustom titlecase-downcase-sentences nil
+  "Whether to downcase words after the first in \"sentence\" style.
+If nil, titlecasing using the \"sentence\" style will leave all
+words as-is.  If t, \"sentence\"-style titlecasing will downcase
+words that don't begin a sentence."
+  :type 'boolean)
+
 (defun titlecase--region-with-style-impl (begin end style)
   "Title-case implementation.
 `titlecase-force-cap-after-punc' must be handled by the caller.
@@ -203,15 +210,26 @@ for docs on BEGIN, END and STYLE."
            ((and (memq style titlecase-styles-capitalize-non-short-words)
                  (> (length this-word) titlecase-short-word-length))
             (capitalize-word 1))
+           ;; Sentence style just capitalizes the first word.  Since we can't be
+           ;; sure how the user has already capitalized anything, we just skip
+           ;; the current word.  HOWEVER, there are times when downcasing the
+           ;; rest of the sentence is warranted.  --- NOTE 2022-05-09: Now I'm
+           ;; thinking about it, does `sentence' style need to do anything
+           ;; whatsoever?  Maybe I just need to include a test toward the top of
+           ;; the enclosing function to make `titlecase-default-case-function'
+           ;; be `downcase-word' if `titlecase-downcase-sentences' is true... or
+           ;; something of that nature.  I might be over-engineering this, is
+           ;; what I'm saying.  Curious, isn't it?
+           ((eq style 'sentence)
+            (funcall (if titlecase-downcase-sentences
+                         #'downcase-word
+                       #'forward-word)
+                     1))
            ;; Skip the next word if:
            ((or
-             ;; Sentence style just capitalizes the first word.  Since we
-             ;; can't be sure how the user has already capitalized
-             ;; anything, we just skip the current word.
-             (eq style 'sentence)
              ;; None of the styles require a capital letter after an
              ;; apostrophe.
-             (eq (char-before (point)) ?')
+             (memq (char-before (point)) '(?' ?’))
              ;; FIXME: Hyphens are a completely different story with
              ;; capitalization.
              (eq (char-before (point)) ?-))
@@ -224,31 +242,33 @@ for docs on BEGIN, END and STYLE."
             (funcall titlecase-default-case-function 1))))
 
         ;; Step over the loop.
-        (skip-syntax-forward "^w" end))
+        (unless (= end (point))
+          (skip-syntax-forward "^w" end)))
       ;; Capitalize the last word, only in some styles and some conditions.
       (when (and (memq style titlecase-styles-capitalize-last-word))
         (save-excursion
           (backward-word 1)
-          (when (>= (point) begin)
+          (when (and (>= (point) begin)
+                     (not (seq-some (lambda (r) (looking-at r))
+                                    titlecase-skip-words-regexps)))
             (capitalize-word 1)))))))
 
 (defun titlecase--region-with-style (begin end style)
   "Title-case the region of English text from BEGIN to END, using STYLE."
   ;; It doesn't makes sense for this function to be interactive;
   ;; `titlecase-region' can now specify a style interactively.
-  (save-excursion
-    (save-match-data
-      (while (< begin end)
-        (goto-char begin)
-        (let ((end-step
-               (if (re-search-forward titlecase-force-cap-after-punc
-                                      end :noerror)
-                   (point)
-                 end)))
-          (if (memq (titlecase--region-with-style-impl begin end-step style)
-                    '(skipped))
-              (setq begin (point))
-            (setq begin end-step)))))))
+  (save-match-data
+    (while (< begin end)
+      (goto-char begin)
+      (let ((end-step
+             (if (re-search-forward titlecase-force-cap-after-punc
+                                    end :noerror)
+                 (point)
+               end)))
+        (if (memq (titlecase--region-with-style-impl begin end-step style)
+                  '(skipped))
+            (setq begin (point))
+          (setq begin end-step))))))
 
 (defun titlecase--read-style ()
   "Read which title-case style to use from the minibuffer."
@@ -330,11 +350,10 @@ POINT is the current point, and calling with
 \\[universal-argument] \\[titlecase-line] will prompt the user
 for the style to use."
   (interactive "d\ni\nP")
-  (goto-char point)
+  (goto-char (or point (point)))
   (let ((style (titlecase--arg style interactivep))
         (thing (bounds-of-thing-at-point 'line)))
-    (titlecase-region (car thing) (cdr thing) style)
-    (goto-char (1- (cdr thing)))))
+    (titlecase-region (car thing) (cdr thing) style)))
 
 ;;;###autoload
 (defun titlecase-sentence (&optional point style interactivep)
@@ -347,7 +366,7 @@ POINT is the current point, and calling with
 \\[universal-argument] \\[titlecase-sentence] will prompt the
 user for the style to use."
   (interactive "d\ni\nP")
-  (goto-char point)
+  (goto-char (or point (point)))
   (let ((style (titlecase--arg style interactivep))
         (thing (bounds-of-thing-at-point 'sentence)))
     (titlecase-region (car thing) (cdr thing) style)
