@@ -67,6 +67,7 @@
                            (ama . "AMA Style")
                            (nyt . "New York Times Style")
                            (wikipedia . "Wikipedia Style")
+                           (imdb . "IMDB Style")
                            (sentence . "Sentence style"))
   "Available styles for title-casing.")
 

@@ -698,6 +698,13 @@ place of a verb meaning 'support' or 'advocate.'\" In addition,
 \"in\" and \"on\" are generally capitalized when used as
 adjectives in actual NYT headlines.")
 
+(defvar titlecase-lowercase-imdb '("a" "an" "and" "as" "at" "by" "for"
+                                   "from" "in" "of" "on" "or" "the" "to"
+                                   "with")
+  "Words to lowercase in IMDB style.
+IMDB is another style guide that's explicit in which words to
+lowercase.  Shout-out to IMDB!")
+
 (defvar titlecase-lowercase-wikipedia
   (append titlecase-articles
           (seq-filter (lambda (p) (< (length p) 5)) titlecase-prepositions)
